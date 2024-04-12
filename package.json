@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "preact": "^10.19.6",
-    "iam-mtaylor-io-js": "github:mtaylor91/iam-mtaylor-io-js"
+    "iam-mtaylor-io-js": "github:mtaylor91/iam-mtaylor-io-js",
+    "preact": "^10.19.6"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.8.2",

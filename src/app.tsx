@@ -1,6 +1,7 @@
-import { useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 import IAM, { UserClient } from 'iam-mtaylor-io-js'
 import './app.css'
+
 
 
 export function Login({ setClient }) {
@@ -9,9 +10,9 @@ export function Login({ setClient }) {
 
 
   const login = async () => {
-    const client = await IAM.client(email, secretKey)
-    const user = await client.user.getUser()
-    setClient(client)
+    const iam = new IAM()
+    await iam.login(email, secretKey)
+    setClient(iam)
   }
 
   return (
@@ -28,13 +29,25 @@ export function Login({ setClient }) {
 
 
 export function Dashboard({ client, setClient }) {
-  const logout = () => {
+  const [users, setUsers] = useState([])
+
+  useEffect(async () => {
+    const users = await client.users.listUsers()
+    console.log(users)
+    setUsers(users)
+  }, [])
+
+  const logout = async () => {
+    await client.logout()
     setClient(null)
   }
 
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1>Users</h1>
+      <ul>
+        {users.map(user => <li>{user.email || user.id}</li>)}
+      </ul>
       <button onClick={logout}>Logout</button>
     </div>
   )
