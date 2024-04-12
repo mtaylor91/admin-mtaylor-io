@@ -33,8 +33,14 @@ export function Dashboard({ client, setClient }) {
 
   useEffect(async () => {
     const users = await client.users.listUsers()
-    console.log(users)
     setUsers(users)
+
+    const interval = setInterval(async () => {
+      const users = await client.users.listUsers()
+      setUsers(users)
+    }, 5000);
+
+    return () => clearInterval(interval)
   }, [])
 
   const logout = async () => {
