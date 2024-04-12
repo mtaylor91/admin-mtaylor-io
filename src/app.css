@@ -1,7 +1,6 @@
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100vw;
+  height: 100vh;
   text-align: center;
 }
 
@@ -16,10 +15,24 @@
   filter: drop-shadow(0 0 2em #673ab8aa);
 }
 
-.card {
-  padding: 2em;
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  padding: 1em;
 }
 
-.read-the-docs {
-  color: #888;
+.menubar {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.policy-statement {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
