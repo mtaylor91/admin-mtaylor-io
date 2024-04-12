@@ -36,6 +36,19 @@ export function Login({ login, email, secretKey, setEmail, setSecretKey}) {
 }
 
 
+export function Menu({ client, logout }) {
+  return (
+    <header class="menubar">
+      <span>Logged in as {client.userId}</span>
+      <a href="/">Users</a>
+      <a href="/groups">Groups</a>
+      <a href="/policies">Policies</a>
+      <button onClick={logout}>Logout</button>
+    </header>
+  )
+}
+
+
 export function Users({ client }) {
   const [users, setUsers] = useState([])
 
@@ -250,10 +263,7 @@ export function App() {
   } else {
     return (
       <div class="container">
-        <header class="menubar">
-          Logged in as {client.userId}
-          <button onClick={logout}>Logout</button>
-        </header>
+        <Menu client={client} logout={logout} />
         <Router>
           <Users path="/" client={client} />
           <Users path="/users" client={client} />
