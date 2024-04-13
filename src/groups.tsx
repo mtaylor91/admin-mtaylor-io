@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'preact/hooks'
-import IAM, { Group } from 'iam-mtaylor-io-js'
+import IAM, { GroupIdentity } from 'iam-mtaylor-io-js'
 import { resolveGroupIdentifier } from './util'
 
 
@@ -10,7 +10,7 @@ interface GroupsViewProps {
 
 
 export function GroupsView({ client }: GroupsViewProps) {
-  const [groups, setGroups] = useState<Group[]>([])
+  const [groups, setGroups] = useState<GroupIdentity[]>([])
 
   useEffect(() => {
     const getGroups = async () => {

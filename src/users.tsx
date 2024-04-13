@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks'
-import IAM, { User } from 'iam-mtaylor-io-js'
+import IAM, { UserIdentity } from 'iam-mtaylor-io-js'
 import { resolveUserIdentifier } from './util'
 
 
@@ -10,7 +10,7 @@ interface UsersViewProps {
 
 
 export function UsersView({ client }: UsersViewProps) {
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<UserIdentity[]>([])
 
   useEffect(() => {
     const getUsers = async () => {
