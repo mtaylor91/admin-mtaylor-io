@@ -197,7 +197,6 @@ export function GroupView({ client, id }: GroupViewProps) {
       <h1>Group</h1>
       <p>{group.id}</p>
       <GroupName group={group} />
-      <h3>Users</h3>
       <GroupUsers group={group} />
       <button onClick={onClickAddUser}>Add User</button>
       <GroupPolicies group={group} />
