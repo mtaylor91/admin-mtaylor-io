@@ -1,5 +1,6 @@
+import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
-import IAM, { User } from 'iam-mtaylor-io-js'
+import IAM, { User, GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
 import { resolveGroupIdentifier, resolvePolicyIdentifier } from './util'
 
 
@@ -10,8 +11,156 @@ interface UserViewProps {
 }
 
 
+function UserEmail({ user }: { user: User }) {
+  if (user.email) {
+    return (
+      <>
+        <h3>Email</h3>
+        <p>{user.email}</p>
+      </>
+    )
+  }
+
+  return null
+}
+
+
+function UserGroups({ user }: { user: User }) {
+  return (
+    <>
+      <h3>Groups</h3>
+      <ul>
+        {user.groups.map(group => {
+          const groupId = resolveGroupIdentifier(group)
+          return (<li><a href={`/groups/${groupId}`}>{groupId}</a></li>)
+        })}
+      </ul>
+    </>
+  )
+}
+
+
+function UserPolicies({ user }: { user: User }) {
+  return (
+    <>
+      <h3>Policies</h3>
+      <ul>
+        {user.policies.map(policy => {
+          const policyId = resolvePolicyIdentifier(policy)
+          return (<li><a href={`/policies/${policyId}`}>{policyId}</a></li>)
+        })}
+      </ul>
+    </>
+  )
+}
+
+
+interface AddGroupProps {
+  client: IAM
+  user: User
+  setShowAddGroup: (showAddGroup: boolean) => void
+}
+
+
+function AddGroup({ client, user, setShowAddGroup }: AddGroupProps) {
+  const [groups, setGroups] = useState<GroupIdentity[]>([])
+
+  useEffect(() => {
+    const getGroups = async () => {
+      const groups = await client.groups.listGroups()
+      setGroups(groups.filter(group =>
+        !user.groups.some(userGroup =>
+          resolveGroupIdentifier(userGroup) === resolveGroupIdentifier(group))))
+    }
+
+    getGroups()
+  }, [])
+
+  const onClickCancel = (event: Event) => {
+    event.preventDefault()
+    setShowAddGroup(false)
+  }
+
+  return (
+    <div>
+      <h1>Add Group</h1>
+      <h3>Groups</h3>
+      <ul>
+        {groups.map(group => {
+          const groupId = resolveGroupIdentifier(group)
+          const onClickAddGroup = async (event: Event) => {
+            event.preventDefault()
+            await client.groups.addMember(groupId, user.id)
+            setShowAddGroup(false)
+          }
+          return (
+            <li>
+              <button onClick={onClickAddGroup}>{groupId}</button>
+            </li>
+          )
+        })}
+      </ul>
+      <button onClick={onClickCancel}>Cancel</button>
+    </div>
+  )
+}
+
+
+interface AddPolicyProps {
+  client: IAM
+  user: User
+  setShowAddPolicy: (showAddPolicy: boolean) => void
+}
+
+
+function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
+  const [policies, setPolicies] = useState<PolicyIdentity[]>([])
+
+  useEffect(() => {
+    const getPolicies = async () => {
+      const policies = await client.policies.listPolicies()
+      setPolicies(policies.filter(policy =>
+        !user.policies.some(userPolicy =>
+          resolvePolicyIdentifier(userPolicy) === resolvePolicyIdentifier(policy))))
+    }
+
+    getPolicies()
+  }, [])
+
+  const onClickCancel = (event: Event) => {
+    event.preventDefault()
+    setShowAddPolicy(false)
+  }
+
+  return (
+    <div>
+      <h1>Add Policy</h1>
+      <h3>Policies</h3>
+      <ul>
+        {policies.map(policy => {
+          const policyId = resolvePolicyIdentifier(policy)
+          const onClickAddPolicy = async (event: Event) => {
+            event.preventDefault()
+            await client.users.attachPolicy(user.id, policyId)
+            setShowAddPolicy(false)
+          }
+          return (
+            <li>
+              <button onClick={onClickAddPolicy}>{policyId}</button>
+            </li>
+          )
+        })}
+      </ul>
+      <button onClick={onClickCancel}>Cancel</button>
+    </div>
+  )
+}
+
+
 export function UserView({ client, id }: UserViewProps) {
   const [user, setUser] = useState<User | null>(null)
+  const [showAddGroup, setShowAddGroup] = useState(false)
+  const [showAddPolicy, setShowAddPolicy] = useState(false)
 
   useEffect(() => {
     if (id === undefined) {
@@ -24,44 +173,32 @@ export function UserView({ client, id }: UserViewProps) {
     }
 
     getUser()
-  }, [id])
+  }, [id, showAddGroup, showAddPolicy])
 
   if (user === null) {
     return <div>Loading...</div>
+  } else if (showAddGroup) {
+    return <AddGroup client={client} user={user} setShowAddGroup={setShowAddGroup} />
+  } else if (showAddPolicy) {
+    return <AddPolicy client={client} user={user} setShowAddPolicy={setShowAddPolicy} />
+  }
+
+  const onClickDelete = async (event: Event) => {
+    event.preventDefault()
+    await client.users.deleteUser(user.id)
+    route('/users')
   }
 
   return (
     <div>
       <h1>User</h1>
       <p>{user.id}</p>
-      {user.email && (
-      <>
-        <h3>Email</h3>
-        <p>{user.email}</p>
-      </>
-      )}
-      {user.groups.length > 0 && (
-      <>
-        <h3>Groups</h3>
-        <ul>
-          {user.groups.map(group => {
-            const groupId = resolveGroupIdentifier(group)
-            return (<li><a href={`/groups/${groupId}`}>{groupId}</a></li>)
-          })}
-        </ul>
-      </>
-      )}
-      {user.policies.length > 0 && (
-      <>
-        <h3>Policies</h3>
-        <ul>
-          {user.policies.map(policy => {
-            const policyId = resolvePolicyIdentifier(policy)
-            return (<li><a href={`/policies/${policyId}`}>{policyId}</a></li>)
-          })}
-        </ul>
-      </>
-      )}
+      <button onClick={onClickDelete}>Delete</button>
+      <UserEmail user={user} />
+      <UserGroups user={user} />
+      <button onClick={() => setShowAddGroup(true)}>Add Group</button>
+      <UserPolicies user={user} />
+      <button onClick={() => setShowAddPolicy(true)}>Add Policy</button>
     </div>
   )
 }
