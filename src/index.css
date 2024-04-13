@@ -57,6 +57,19 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form button {
+  margin: 0.5em 0;
+}
+
+form input {
+  margin: 0.5em 0;
+}
+
 ul {
   list-style: none;
   padding: 0;

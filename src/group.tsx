@@ -1,3 +1,4 @@
+import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 import IAM, { Group, UserIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
 import { resolveUserIdentifier, resolvePolicyIdentifier } from './util'
@@ -192,10 +193,17 @@ export function GroupView({ client, id }: GroupViewProps) {
     setShowAddPolicy(true)
   }
 
+  const onClickDelete = async (event: Event) => {
+    event.preventDefault()
+    await client.groups.deleteGroup(group.id)
+    route('/groups')
+  }
+
   return (
     <div>
       <h1>Group</h1>
       <p>{group.id}</p>
+      <button onClick={onClickDelete}>Delete</button>
       <GroupName group={group} />
       <GroupUsers group={group} />
       <button onClick={onClickAddUser}>Add User</button>
