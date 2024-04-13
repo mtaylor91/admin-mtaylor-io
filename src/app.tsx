@@ -1,19 +1,12 @@
 import Router from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
-import IAM, { UserClient } from 'iam-mtaylor-io-js'
+import IAM from 'iam-mtaylor-io-js'
+import { User, Group, Policy } from 'iam-mtaylor-io-js'
+import { UserIdentity, GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
 import './app.css'
 
 
-function resolveGroupIdentifier(group) {
-  if (typeof group === 'string') {
-    return group
-  } else {
-    return group.name || group.id
-  }
-}
-
-
-function resolveUserIdentifier(user) {
+function resolveUserIdentifier(user: User | UserIdentity) {
   if (typeof user === 'string') {
     return user
   } else {
@@ -22,21 +15,62 @@ function resolveUserIdentifier(user) {
 }
 
 
-export function Login({ login, email, secretKey, setEmail, setSecretKey}) {
+function resolveGroupIdentifier(group: Group | GroupIdentity) {
+  if (typeof group === 'string') {
+    return group
+  } else {
+    return group.name || group.id
+  }
+}
+
+
+function resolvePolicyIdentifier(policy: Policy | PolicyIdentity) {
+  if (typeof policy === 'string') {
+    return policy
+  } else {
+    return policy.name || policy.id
+  }
+}
+
+
+interface LoginProps {
+  login: () => void
+  email: string
+  secretKey: string
+  setEmail: (email: string) => void
+  setSecretKey: (secretKey: string) => void
+}
+
+
+export function Login({login, email, secretKey, setEmail, setSecretKey}: LoginProps) {
+  const onInputEmail = (e: Event) => {
+    setEmail((e.target as HTMLInputElement).value)
+  }
+
+  const onInputSecretKey = (e: Event) => {
+    setSecretKey((e.target as HTMLInputElement).value)
+  }
+
   return (
     <form onSubmit={e => { e.preventDefault(); login() }}>
       <h1>Login</h1>
-      <input id="email" type="text" placeholder="Email" value={email}
-        onInput={(e) => setEmail(e.target.value)} />
-      <input id="password" type="password" placeholder="Secret Key" value={secretKey}
-        onInput={(e) => setSecretKey(e.target.value)} />
+      <input id="email" type="text" placeholder="Email"
+        value={email} onInput={onInputEmail} />
+      <input id="password" type="password" placeholder="Secret Key"
+        value={secretKey} onInput={onInputSecretKey} />
       <button type="submit" value="Login">Login</button>
     </form>
   )
 }
 
 
-export function Menu({ client, logout }) {
+interface MenuProps {
+  client: IAM
+  logout: () => void
+}
+
+
+export function Menu({ client, logout }: MenuProps) {
   return (
     <header class="menubar">
       <span>Logged in as {client.userId}</span>
@@ -49,12 +83,22 @@ export function Menu({ client, logout }) {
 }
 
 
-export function Users({ client }) {
-  const [users, setUsers] = useState([])
+interface UsersViewProps {
+  client: IAM,
+  path?: string
+}
 
-  useEffect(async () => {
-    const users = await client.users.listUsers()
-    setUsers(users)
+
+export function UsersView({ client }: UsersViewProps) {
+  const [users, setUsers] = useState<User[]>([])
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const users = await client.users.listUsers()
+      setUsers(users)
+    }
+
+    getUsers()
   }, [])
 
   return (
@@ -71,12 +115,22 @@ export function Users({ client }) {
 }
 
 
-export function Groups({ client }) {
-  const [groups, setGroups] = useState([])
+interface GroupsViewProps {
+  client: IAM
+  path?: string
+}
 
-  useEffect(async () => {
-    const groups = await client.groups.listGroups()
-    setGroups(groups)
+
+export function GroupsView({ client }: GroupsViewProps) {
+  const [groups, setGroups] = useState<Group[]>([])
+
+  useEffect(() => {
+    const getGroups = async () => {
+      const groups = await client.groups.listGroups()
+      setGroups(groups)
+    }
+
+    getGroups()
   }, [])
 
   return (
@@ -93,12 +147,22 @@ export function Groups({ client }) {
 }
 
 
-export function Policies({ client }) {
-  const [policies, setPolicies] = useState([])
+interface PoliciesViewProps {
+  client: IAM
+  path?: string
+}
 
-  useEffect(async () => {
-    const policies = await client.policies.listPolicies()
-    setPolicies(policies)
+
+export function PoliciesView({ client }: PoliciesViewProps) {
+  const [policies, setPolicies] = useState<PolicyIdentity[]>([])
+
+  useEffect(() => {
+    const getPolicies = async () => {
+      const policies = await client.policies.listPolicies()
+      setPolicies(policies)
+    }
+
+    getPolicies()
   }, [])
 
   return (
@@ -106,7 +170,8 @@ export function Policies({ client }) {
       <h1>Policies</h1>
       <ul>
         {policies.map(policy => {
-          return (<li><a href={`/policies/${policy}`}>{policy}</a></li>)
+          const policyId = resolvePolicyIdentifier(policy)
+          return (<li><a href={`/policies/${policyId}`}>{policyId}</a></li>)
         })}
       </ul>
     </div>
@@ -114,13 +179,28 @@ export function Policies({ client }) {
 }
 
 
-export function User({ client, id }) {
-  const [user, setUser] = useState(null)
+interface UserViewProps {
+  client: IAM
+  id?: string
+  path?: string
+}
 
-  useEffect(async () => {
-    const user = await client.users.getUser(id)
-    setUser(user)
-  }, [])
+
+export function UserView({ client, id }: UserViewProps) {
+  const [user, setUser] = useState<User | null>(null)
+
+  useEffect(() => {
+    if (id === undefined) {
+      return
+    }
+
+    const getUser = async () => {
+      const user = await client.users.getUser(id)
+      setUser(user)
+    }
+
+    getUser()
+  }, [id])
 
   if (user === null) {
     return <div>Loading...</div>
@@ -129,7 +209,13 @@ export function User({ client, id }) {
   return (
     <div>
       <h1>User</h1>
-      <p>{user.email || user.id}</p>
+      <p>{user.id}</p>
+      {user.email && (
+      <>
+        <h3>Email</h3>
+        <p>{user.email}</p>
+      </>
+      )}
       <h3>Groups</h3>
       <ul>
         {user.groups.map(group => {
@@ -139,20 +225,38 @@ export function User({ client, id }) {
       </ul>
       <h3>Policies</h3>
       <ul>
-        {user.policies.map(policy => <li>{policy}</li>)}
+        {user.policies.map(policy => {
+          const policyId = resolvePolicyIdentifier(policy)
+          return (<li><a href={`/policies/${policyId}`}>{policyId}</a></li>)
+        })}
       </ul>
     </div>
   )
 }
 
 
-export function Group({ client, id }) {  
-  const [group, setGroup] = useState(null)
+interface GroupViewProps {
+  client: IAM
+  id?: string
+  path?: string
+}
 
-  useEffect(async () => {
-    const group = await client.groups.getGroup(id)
-    setGroup(group)
-  }, [])
+
+export function GroupView({ client, id }: GroupViewProps) {
+  const [group, setGroup] = useState<Group | null>(null)
+
+  useEffect(() => {
+    if (id === undefined) {
+      return
+    }
+
+    const getGroup = async () => {
+      const group = await client.groups.getGroup(id)
+      setGroup(group)
+    }
+
+    getGroup()
+  }, [id])
 
   if (group === null) {
     return <div>Loading...</div>
@@ -161,7 +265,13 @@ export function Group({ client, id }) {
   return (
     <div>
       <h1>Group</h1>
-      <p>{group.name || group.id}</p>
+      <p>{group.id}</p>
+      {group.name && (
+      <>
+        <h3>Name</h3>
+        <p>{group.name}</p>
+      </>
+      )}
       <h3>Users</h3>
       <ul>
         {group.users.map(user => {
@@ -173,22 +283,37 @@ export function Group({ client, id }) {
       </ul>
       <h3>Policies</h3>
       <ul>
-        {group.policies.map(policyId => (
-        <li><a href={`/policies/${policyId}`}>{policyId}</a></li>
-        ))}
+        {group.policies.map(policy => {
+          const policyId = resolvePolicyIdentifier(policy)
+          return (<li><a href={`/policies/${policyId}`}>{policyId}</a></li>)
+        })}
       </ul>
     </div>
   )
 }
 
 
-export function Policy({ client, id }) {
-  const [policy, setPolicy] = useState(null)
+interface PolicyViewProps {
+  client: IAM
+  id?: string
+  path?: string
+}
 
-  useEffect(async () => {
-    const policy = await client.policies.getPolicy(id)
-    console.log(policy)
-    setPolicy(policy)
+
+export function PolicyView({ client, id }: PolicyViewProps) {
+  const [policy, setPolicy] = useState<Policy | null>(null)
+
+  useEffect(() => {
+    if (id === undefined) {
+      return
+    }
+
+    const getPolicy = async () => {
+      const policy = await client.policies.getPolicy(id)
+      setPolicy(policy)
+    }
+
+    getPolicy()
   }, [])
 
   if (policy === null) {
@@ -199,34 +324,56 @@ export function Policy({ client, id }) {
     <div>
       <h1>Policy</h1>
       <p>{policy.id}</p>
+      {policy.name && (
+      <>
+        <h3>Name</h3>
+        <p>{policy.name}</p>
+      </>
+      )}
+      <h3>Hostname</h3>
+      <p>{policy.hostname}</p>
       <h3>Statements</h3>
-      <PolicyStatements statements={policy.statements} />
+      <PolicyStatements policy={policy} />
     </div>
   )
 }
 
 
-export function PolicyStatements({ statements }) {
-  return statements.map(statement => {
-    return (
-      <div class="policy-statement">
-        <h3>{statement.effect}</h3>
-        <h3>{statement.action}</h3>
-        <h3>{statement.resource}</h3>
-      </div>
-    )
-  })
+interface PolicyStatementsProps {
+  policy: Policy
+}
+
+
+export function PolicyStatements({ policy }: PolicyStatementsProps) {
+  return (
+    <div class="policy-statements">
+    {policy.statements.map((statement, index) => {
+      return (
+        <div class="policy-statement" key={index}>
+          <h3>{statement.effect}</h3>
+          <h3>{statement.action}</h3>
+          <h3>{statement.resource}</h3>
+        </div>
+      )
+    })}
+    </div>
+  )
 }
 
 
 export function App() {
-  const [client, setClient] = useState(null)
-  const [email, setEmail] = useState('')
-  const [secretKey, setSecretKey] = useState('')
+  const [client, setClient] = useState<IAM | null>(null)
+  const [email, setEmail] = useState<string>('')
+  const [secretKey, setSecretKey] = useState<string>('')
 
   const login = async () => {
     const iam = new IAM()
     await iam.login(email, secretKey)
+
+    if (iam.sessionId === null || iam.sessionToken === null) {
+      throw new Error('Failed to login')
+    }
+
     localStorage.setItem('MTAYLOR_IO_EMAIL', email)
     localStorage.setItem('MTAYLOR_IO_SECRET_KEY', secretKey)
     localStorage.setItem('MTAYLOR_IO_SESSION_ID', iam.sessionId)
@@ -235,6 +382,10 @@ export function App() {
   }
 
   const logout = async () => {
+    if (client === null) {
+      return
+    }
+
     await client.logout()
     localStorage.removeItem('MTAYLOR_IO_EMAIL')
     localStorage.removeItem('MTAYLOR_IO_SECRET_KEY')
@@ -243,16 +394,20 @@ export function App() {
     setClient(null)
   }
 
-  useEffect(async () => {
-    const email = localStorage.getItem('MTAYLOR_IO_EMAIL')
-    const secretKey = localStorage.getItem('MTAYLOR_IO_SECRET_KEY')
-    const sessionId = localStorage.getItem('MTAYLOR_IO_SESSION_ID')
-    const sessionToken = localStorage.getItem('MTAYLOR_IO_SESSION_TOKEN')
-    if (email && secretKey && sessionId && sessionToken) {
-      const iam = new IAM()
-      await iam.refresh(email, secretKey, sessionId, sessionToken)
-      setClient(iam)
+  useEffect(() => {
+    const tryReloadSession = async () => {
+      const email = localStorage.getItem('MTAYLOR_IO_EMAIL')
+      const secretKey = localStorage.getItem('MTAYLOR_IO_SECRET_KEY')
+      const sessionId = localStorage.getItem('MTAYLOR_IO_SESSION_ID')
+      const sessionToken = localStorage.getItem('MTAYLOR_IO_SESSION_TOKEN')
+      if (email && secretKey && sessionId && sessionToken) {
+        const iam = new IAM()
+        await iam.refresh(email, secretKey, sessionId, sessionToken)
+        setClient(iam)
+      }
     }
+
+    tryReloadSession()
   }, [])
 
   if (client === null) {
@@ -265,13 +420,13 @@ export function App() {
       <div class="container">
         <Menu client={client} logout={logout} />
         <Router>
-          <Users path="/" client={client} />
-          <Users path="/users" client={client} />
-          <User path="/users/:id" client={client} />
-          <Groups path="/groups" client={client} />
-          <Group path="/groups/:id" client={client} />
-          <Policies path="/policies" client={client} />
-          <Policy path="/policies/:id" client={client} />
+          <UsersView path="/" client={client}/>
+          <UsersView path="/users" client={client}/>
+          <UserView path="/users/:id" client={client} />
+          <GroupsView path="/groups" client={client} />
+          <GroupView path="/groups/:id" client={client} />
+          <PoliciesView path="/policies" client={client} />
+          <PolicyView path="/policies/:id" client={client} />
         </Router>
       </div>
     )
