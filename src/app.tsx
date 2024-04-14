@@ -63,8 +63,10 @@ export function App() {
 
   if (client === null) {
     return (
-      <Login login={login} email={email} secretKey={secretKey}
-        setEmail={setEmail} setSecretKey={setSecretKey}/>
+      <div class="container">
+        <Login login={login} email={email} secretKey={secretKey}
+          setEmail={setEmail} setSecretKey={setSecretKey}/>
+      </div>
     )
   } else {
     return (
