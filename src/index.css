@@ -75,10 +75,13 @@ form label {
 form label input {
   flex-grow: 1;
   margin-left: 0.5em;
+  text-align: right;
 }
 
 select {
   flex-grow: 1;
+  margin-left: 0.5em;
+  text-align: right;
 }
 
 ul {

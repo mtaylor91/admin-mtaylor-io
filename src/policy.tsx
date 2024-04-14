@@ -1,3 +1,4 @@
+import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 import IAM, { Policy } from 'iam-mtaylor-io-js'
 
@@ -25,14 +26,21 @@ export function PolicyView({ client, id }: PolicyViewProps) {
     getPolicy()
   }, [])
 
-  if (policy === null) {
+  if (id === undefined || policy === null) {
     return <div>Loading...</div>
+  }
+
+  const onClickDelete = async (event: Event) => {
+    event.preventDefault()
+    await client.policies.deletePolicy(id)
+    route('/policies')
   }
 
   return (
     <div>
       <h1>Policy</h1>
       <p>{policy.id}</p>
+      <button onClick={onClickDelete}>Delete</button>
       {policy.name && (
       <>
         <h3>Name</h3>
