@@ -85,9 +85,12 @@ select {
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
   table-layout: fixed;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 0.5em;
 }
 
 ul {

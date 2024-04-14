@@ -53,7 +53,7 @@ export function UsersView({ client }: UsersViewProps) {
 
   if (showCreateUserForm) {
     return (
-      <div>
+      <>
         <h1>Create User</h1>
         <form onSubmit={onSubmitCreateUser}>
           <label>
@@ -64,11 +64,11 @@ export function UsersView({ client }: UsersViewProps) {
           <button type="submit">Create</button>
           <button onClick={onCancelCreateUser}>Cancel</button>
         </form>
-      </div>
+      </>
     )
   } else {
     return (
-      <div>
+      <>
         <h1>Users</h1>
         <button onClick={onClickCreateUser}>Create User</button>
         <ul>
@@ -77,7 +77,7 @@ export function UsersView({ client }: UsersViewProps) {
             return (<li><a href={`/users/${userId}`}>{userId}</a></li>)
           })}
         </ul>
-      </div>
+      </>
     )
   }
 }

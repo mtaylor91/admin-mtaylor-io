@@ -4,43 +4,73 @@ import IAM, { PolicyIdentity, Rule, Action, Effect } from 'iam-mtaylor-io-js'
 import { resolvePolicyIdentifier } from './util'
 
 
+interface CreatePolicyStatementViewProps {
+  statement: Rule
+  setStatement: (statement: Rule) => void
+  deleteStatement: () => void
+}
+
+
+function CreatePolicyStatementView({
+  statement, setStatement, deleteStatement
+}: CreatePolicyStatementViewProps) {
+  const onInputAction = async (event: Event) => {
+    const target = event.target as HTMLInputElement
+    setStatement({ ...statement, action: target.value as Action })
+  }
+
+  const onInputEffect = async (event: Event) => {
+    const target = event.target as HTMLInputElement
+    setStatement({ ...statement, effect: target.value as Effect })
+  }
+
+  const onInputResource = async (event: Event) => {
+    const target = event.target as HTMLInputElement
+    setStatement({ ...statement, resource: target.value })
+  }
+
+  return (
+    <tr>
+      <td>
+        <select onInput={onInputAction}>
+          <option value="Read">Read</option>
+          <option value="Write">Write</option>
+        </select>
+      </td>
+      <td>
+        <select onInput={onInputEffect}>
+          <option value="Allow">Allow</option>
+          <option value="Deny">Deny</option>
+        </select>
+      </td>
+      <td>
+        <input type="text" onInput={onInputResource}
+          value={statement.resource} />
+      </td>
+      <td>
+        <button onClick={deleteStatement}>Delete</button>
+      </td>
+    </tr>
+  )
+}
+
+
 interface CreatePolicyStatementsViewProps {
   statements: Rule[]
   setStatements: (statements: Rule[]) => void
 }
 
 
-function CreatePolicyStatementsView({ statements, setStatements }: CreatePolicyStatementsViewProps) {
-  const [newStatementAction, setNewStatementAction] = useState("Read")
-  const [newStatementEffect, setNewStatementEffect] = useState("Allow")
-  const [newStatementResource, setNewStatementResource] = useState('*')
-
+function CreatePolicyStatementsView({
+  statements, setStatements
+}: CreatePolicyStatementsViewProps) {
   const onClickAddStatement = async (event: Event) => {
     event.preventDefault()
     setStatements([...statements, {
-      action: newStatementAction as Action,
-      effect: newStatementEffect as Effect,
-      resource: newStatementResource
+      effect: "Allow" as Effect,
+      action: "Read" as Action,
+      resource: "*"
     }])
-  }
-
-  const onClickRemoveStatement = async (index: number) => {
-    setStatements(statements.filter((_, i) => i !== index))
-  }
-
-  const onInputNewStatementAction = async (event: Event) => {
-    const target = event.target as HTMLInputElement
-    setNewStatementAction(target.value)
-  }
-
-  const onInputNewStatementEffect = async (event: Event) => {
-    const target = event.target as HTMLInputElement
-    setNewStatementEffect(target.value)
-  }
-
-  const onInputNewStatementResource = async (event: Event) => {
-    const target = event.target as HTMLInputElement
-    setNewStatementResource(target.value)
   }
 
   return (
@@ -57,40 +87,21 @@ function CreatePolicyStatementsView({ statements, setStatements }: CreatePolicyS
         </thead>
         <tbody>
           {statements.map((statement, index) => {
+            const setStatement = (statement: Rule) => {
+              setStatements(statements.map((s, i) => i === index ? statement : s))
+            }
+
+            const deleteStatement = () => {
+              setStatements(statements.filter((_, i) => i !== index))
+            }
+
             return (
-              <tr>
-                <td>{statement.action}</td>
-                <td>{statement.effect}</td>
-                <td>{statement.resource}</td>
-                <td>
-                  <button onClick={() => onClickRemoveStatement(index)}>
-                    Remove
-                  </button>
-                </td>
-              </tr>
+              <CreatePolicyStatementView statement={statement}
+                setStatement={setStatement} deleteStatement={deleteStatement} />
             )
           })}
         </tbody>
       </table>
-      <label>
-        Action
-        <select onInput={onInputNewStatementAction}>
-          <option value="Read">Read</option>
-          <option value="Write">Write</option>
-        </select>
-      </label>
-      <label>
-        Effect
-        <select onInput={onInputNewStatementEffect}>
-          <option value="Allow">Allow</option>
-          <option value="Deny">Deny</option>
-        </select>
-      </label>
-      <label>
-        Resource
-        <input type="text" onInput={onInputNewStatementResource}
-          value={newStatementResource} />
-      </label>
       <button onClick={onClickAddStatement}>Add Statement</button>
     </>
   )
@@ -161,7 +172,7 @@ export function PoliciesView({ client }: PoliciesViewProps) {
 
   if (showCreatePolicy) {
     return (
-      <div>
+      <>
         <h1>Create Policy</h1>
         <form onSubmit={onSubmitCreatePolicy}>
           <label>
@@ -177,11 +188,11 @@ export function PoliciesView({ client }: PoliciesViewProps) {
           <button type="submit">Create</button>
           <button onClick={onCancelCreatePolicy}>Cancel</button>
         </form>
-      </div>
+      </>
     )
   } else {
     return (
-      <div>
+      <>
         <h1>Policies</h1>
         <button onClick={onClickCreatePolicy}>Create Policy</button>
         <ul>
@@ -190,7 +201,7 @@ export function PoliciesView({ client }: PoliciesViewProps) {
             return (<li><a href={`/policies/${policyId}`}>{policyId}</a></li>)
           })}
         </ul>
-      </div>
+      </>
     )
   }
 }

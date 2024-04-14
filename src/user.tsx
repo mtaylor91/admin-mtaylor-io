@@ -210,7 +210,7 @@ export function UserView({ client, id }: UserViewProps) {
   }
 
   return (
-    <div>
+    <>
       <h1>User</h1>
       <p>{user.id}</p>
       <button onClick={onClickDelete}>Delete</button>
@@ -219,6 +219,6 @@ export function UserView({ client, id }: UserViewProps) {
       <button onClick={() => setShowAddGroup(true)}>Add Group</button>
       <UserPolicies client={client} user={user} />
       <button onClick={() => setShowAddPolicy(true)}>Add Policy</button>
-    </div>
+    </>
   )
 }

@@ -53,7 +53,7 @@ export function GroupsView({ client }: GroupsViewProps) {
 
   if (showCreateGroup) {
     return (
-      <div>
+      <>
         <h1>Create Group</h1>
         <form onSubmit={onSubmitCreateGroup}>
           <label>
@@ -63,11 +63,11 @@ export function GroupsView({ client }: GroupsViewProps) {
           <button type="submit">Create</button>
           <button onClick={onCancelCreateGroup}>Cancel</button>
         </form>
-      </div>
+      </>
     )
   } else {
     return (
-      <div>
+      <>
         <h1>Groups</h1>
         <button onClick={onClickCreateGroup}>Create Group</button>
         <ul>
@@ -76,7 +76,7 @@ export function GroupsView({ client }: GroupsViewProps) {
             return (<li><a href={`/groups/${groupId}`}>{groupId}</a></li>)
           })}
         </ul>
-      </div>
+      </>
     )
   }
 }

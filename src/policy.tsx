@@ -3,6 +3,37 @@ import { useState, useEffect } from 'preact/hooks'
 import IAM, { Policy } from 'iam-mtaylor-io-js'
 
 
+interface PolicyStatementsProps {
+  policy: Policy
+}
+
+
+function PolicyStatements({ policy }: PolicyStatementsProps) {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Effect</th>
+          <th>Action</th>
+          <th>Resource</th>
+        </tr>
+      </thead>
+      <tbody>
+        {policy.statements.map((statement) => {
+          return (
+            <tr>
+              <td>{statement.effect}</td>
+              <td>{statement.action}</td>
+              <td>{statement.resource}</td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  )
+}
+
+
 interface PolicyViewProps {
   client: IAM
   id?: string
@@ -37,7 +68,7 @@ export function PolicyView({ client, id }: PolicyViewProps) {
   }
 
   return (
-    <div>
+    <>
       <h1>Policy</h1>
       <p>{policy.id}</p>
       <button onClick={onClickDelete}>Delete</button>
@@ -51,28 +82,6 @@ export function PolicyView({ client, id }: PolicyViewProps) {
       <p>{policy.hostname}</p>
       <h3>Statements</h3>
       <PolicyStatements policy={policy} />
-    </div>
-  )
-}
-
-
-interface PolicyStatementsProps {
-  policy: Policy
-}
-
-
-function PolicyStatements({ policy }: PolicyStatementsProps) {
-  return (
-    <div class="policy-statements">
-    {policy.statements.map((statement, index) => {
-      return (
-        <div class="policy-statement" key={index}>
-          <h3>{statement.effect}</h3>
-          <h3>{statement.action}</h3>
-          <h3>{statement.resource}</h3>
-        </div>
-      )
-    })}
-    </div>
+    </>
   )
 }
