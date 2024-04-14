@@ -25,31 +25,51 @@ function UserEmail({ user }: { user: User }) {
 }
 
 
-function UserGroups({ user }: { user: User }) {
+function UserGroups({ client, user }: { client: IAM, user: User }) {
   return (
     <>
       <h3>Groups</h3>
-      <ul>
-        {user.groups.map(group => {
-          const groupId = resolveGroupIdentifier(group)
-          return (<li><a href={`/groups/${groupId}`}>{groupId}</a></li>)
-        })}
-      </ul>
+      <table>
+        <tbody>
+          {user.groups.map(group => {
+            const groupId = resolveGroupIdentifier(group)
+            const onClickDelete = async () => {
+              await client.groups.removeMember(groupId, user.id)
+            }
+            return (
+              <tr>
+                <td><a href={`/groups/${groupId}`}>{groupId}</a></td>
+                <td><button onClick={onClickDelete}>Delete</button></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </>
   )
 }
 
 
-function UserPolicies({ user }: { user: User }) {
+function UserPolicies({ client, user }: { client: IAM, user: User }) {
   return (
     <>
       <h3>Policies</h3>
-      <ul>
-        {user.policies.map(policy => {
-          const policyId = resolvePolicyIdentifier(policy)
-          return (<li><a href={`/policies/${policyId}`}>{policyId}</a></li>)
-        })}
-      </ul>
+      <table>
+        <tbody>
+          {user.policies.map(policy => {
+            const policyId = resolvePolicyIdentifier(policy)
+            const onClickDelete = async () => {
+              await client.users.detachPolicy(user.id, policyId)
+            }
+            return (
+              <tr>
+                <td><a href={`/policies/${policyId}`}>{policyId}</a></td>
+                <td><button onClick={onClickDelete}>Delete</button></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </>
   )
 }
@@ -195,9 +215,9 @@ export function UserView({ client, id }: UserViewProps) {
       <p>{user.id}</p>
       <button onClick={onClickDelete}>Delete</button>
       <UserEmail user={user} />
-      <UserGroups user={user} />
+      <UserGroups client={client} user={user} />
       <button onClick={() => setShowAddGroup(true)}>Add Group</button>
-      <UserPolicies user={user} />
+      <UserPolicies client={client} user={user} />
       <button onClick={() => setShowAddPolicy(true)}>Add Policy</button>
     </div>
   )

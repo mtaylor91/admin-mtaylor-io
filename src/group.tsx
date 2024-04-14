@@ -25,35 +25,51 @@ function GroupName({ group }: { group: Group }) {
 }
 
 
-function GroupUsers({ group }: { group: Group }) {
+function GroupUsers({ client, group }: { client: IAM, group: Group }) {
   return (
     <>
       <h3>Users</h3>
-      <ul>
-        {group.users.map(user => {
-          const userId = resolveUserIdentifier(user)
-          return (
-            <li><a href={`/users/${userId}`}><h5>{userId}</h5></a></li>
-          )
-        })}
-      </ul>
+      <table>
+        <tbody>
+          {group.users.map(user => {
+            const userId = resolveUserIdentifier(user)
+            const onClickDelete = async () => {
+              await client.groups.removeMember(group.id, userId)
+            }
+            return (
+              <tr>
+                <td><a href={`/users/${userId}`}>{userId}</a></td>
+                <td><button onClick={onClickDelete}>Delete</button></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </>
   )
 }
 
 
-function GroupPolicies({ group }: { group: Group }) {
+function GroupPolicies({ client, group }: { client: IAM, group: Group }) {
   return (
     <>
       <h3>Policies</h3>
-      <ul>
-        {group.policies.map(policy => {
-          const policyId = resolvePolicyIdentifier(policy)
-          return (
-            <li><a href={`/policies/${policyId}`}><h5>{policyId}</h5></a></li>
-          )
-        })}
-      </ul>
+      <table>
+        <tbody>
+          {group.policies.map(policy => {
+            const policyId = resolvePolicyIdentifier(policy)
+            const onClickDelete = async () => {
+              await client.groups.detachPolicy(group.id, policyId)
+            }
+            return (
+              <tr>
+                <td><a href={`/policies/${policyId}`}>{policyId}</a></td>
+                <td><button onClick={onClickDelete}>Delete</button></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
     </>
   )
 }
@@ -200,15 +216,15 @@ export function GroupView({ client, id }: GroupViewProps) {
   }
 
   return (
-    <div>
+    <>
       <h1>Group</h1>
       <p>{group.id}</p>
       <button onClick={onClickDelete}>Delete</button>
       <GroupName group={group} />
-      <GroupUsers group={group} />
+      <GroupUsers client={client} group={group} />
       <button onClick={onClickAddUser}>Add User</button>
-      <GroupPolicies group={group} />
+      <GroupPolicies client={client} group={group} />
       <button onClick={onClickAddPolicy}>Add Policy</button>
-    </div>
+    </>
   )
 }

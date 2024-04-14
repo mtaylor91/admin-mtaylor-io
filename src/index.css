@@ -84,6 +84,12 @@ select {
   text-align: right;
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
 ul {
   list-style: none;
   padding: 0;
