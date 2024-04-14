@@ -66,8 +66,19 @@ form button {
   margin: 0.5em 0;
 }
 
-form input {
+form label {
   margin: 0.5em 0;
+  display: flex;
+  flex-direction: row;
+}
+
+form label input {
+  flex-grow: 1;
+  margin-left: 0.5em;
+}
+
+select {
+  flex-grow: 1;
 }
 
 ul {
