@@ -6,7 +6,6 @@ steps:
 - name: build
   image: docker.io/oven/bun:1
   commands:
-  - set -eux
   - bun install
   - bun run build
 - name: image
