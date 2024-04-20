@@ -39,7 +39,7 @@ function UserGroups({ client, user }: { client: IAM, user: User }) {
             return (
               <tr>
                 <td><a href={`/groups/${groupId}`}>{groupId}</a></td>
-                <td><button onClick={onClickDelete}>Delete</button></td>
+                <td><button onClick={onClickDelete}>Remove</button></td>
               </tr>
             )
           })}
@@ -64,7 +64,7 @@ function UserPolicies({ client, user }: { client: IAM, user: User }) {
             return (
               <tr>
                 <td><a href={`/policies/${policyId}`}>{policyId}</a></td>
-                <td><button onClick={onClickDelete}>Delete</button></td>
+                <td><button onClick={onClickDelete}>Remove</button></td>
               </tr>
             )
           })}
@@ -213,12 +213,12 @@ export function UserView({ client, id }: UserViewProps) {
     <>
       <h1>User</h1>
       <p>{user.id}</p>
-      <button onClick={onClickDelete}>Delete</button>
       <UserEmail user={user} />
       <UserGroups client={client} user={user} />
       <button onClick={() => setShowAddGroup(true)}>Add Group</button>
       <UserPolicies client={client} user={user} />
       <button onClick={() => setShowAddPolicy(true)}>Add Policy</button>
+      <button onClick={onClickDelete}>Delete</button>
     </>
   )
 }

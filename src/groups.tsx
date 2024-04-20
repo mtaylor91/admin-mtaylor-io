@@ -68,7 +68,6 @@ export function GroupsView({ client }: GroupsViewProps) {
   } else {
     return (
       <>
-        <h1>Groups</h1>
         <button onClick={onClickCreateGroup}>Create Group</button>
         <ul>
           {groups.map(group => {

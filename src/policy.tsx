@@ -55,7 +55,7 @@ export function PolicyView({ client, id }: PolicyViewProps) {
     }
 
     getPolicy()
-  }, [])
+  }, [id])
 
   if (id === undefined || policy === null) {
     return <div>Loading...</div>
@@ -71,7 +71,6 @@ export function PolicyView({ client, id }: PolicyViewProps) {
     <>
       <h1>Policy</h1>
       <p>{policy.id}</p>
-      <button onClick={onClickDelete}>Delete</button>
       {policy.name && (
       <>
         <h3>Name</h3>
@@ -82,6 +81,7 @@ export function PolicyView({ client, id }: PolicyViewProps) {
       <p>{policy.hostname}</p>
       <h3>Statements</h3>
       <PolicyStatements policy={policy} />
+      <button onClick={onClickDelete}>Delete</button>
     </>
   )
 }

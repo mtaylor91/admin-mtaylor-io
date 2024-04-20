@@ -39,7 +39,7 @@ function GroupUsers({ client, group }: { client: IAM, group: Group }) {
             return (
               <tr>
                 <td><a href={`/users/${userId}`}>{userId}</a></td>
-                <td><button onClick={onClickDelete}>Delete</button></td>
+                <td><button onClick={onClickDelete}>Remove</button></td>
               </tr>
             )
           })}
@@ -64,7 +64,7 @@ function GroupPolicies({ client, group }: { client: IAM, group: Group }) {
             return (
               <tr>
                 <td><a href={`/policies/${policyId}`}>{policyId}</a></td>
-                <td><button onClick={onClickDelete}>Delete</button></td>
+                <td><button onClick={onClickDelete}>Remove</button></td>
               </tr>
             )
           })}
@@ -187,7 +187,7 @@ export function GroupView({ client, id }: GroupViewProps) {
     }
 
     getGroup()
-  }, [id])
+  }, [id, showAddUser, showAddPolicy])
 
   if (group === null) {
     return <div>Loading...</div>
@@ -219,12 +219,12 @@ export function GroupView({ client, id }: GroupViewProps) {
     <>
       <h1>Group</h1>
       <p>{group.id}</p>
-      <button onClick={onClickDelete}>Delete</button>
       <GroupName group={group} />
       <GroupUsers client={client} group={group} />
       <button onClick={onClickAddUser}>Add User</button>
       <GroupPolicies client={client} group={group} />
       <button onClick={onClickAddPolicy}>Add Policy</button>
+      <button onClick={onClickDelete}>Delete</button>
     </>
   )
 }

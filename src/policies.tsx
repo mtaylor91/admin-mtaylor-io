@@ -193,7 +193,6 @@ export function PoliciesView({ client }: PoliciesViewProps) {
   } else {
     return (
       <>
-        <h1>Policies</h1>
         <button onClick={onClickCreatePolicy}>Create Policy</button>
         <ul>
           {policies.map(policy => {

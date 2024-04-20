@@ -1,6 +1,6 @@
 import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
-import IAM, { UserIdentity } from 'iam-mtaylor-io-js'
+import IAM, { UserIdentity, Principal } from 'iam-mtaylor-io-js'
 import { resolveUserIdentifier } from './util'
 
 
@@ -14,6 +14,7 @@ export function UsersView({ client }: UsersViewProps) {
   const [users, setUsers] = useState<UserIdentity[]>([])
   const [showCreateUserForm, setShowCreateUserForm] = useState(false)
   const [createUserEmail, setCreateUserEmail] = useState('')
+  const [newUserPrincipal, setNewUserPrincipal] = useState<Principal | null>(null)
 
   useEffect(() => {
     const getUsers = async () => {
@@ -24,6 +25,14 @@ export function UsersView({ client }: UsersViewProps) {
     getUsers()
   }, [])
 
+  const onClickConfirmNewUser = async (event: Event) => {
+    event.preventDefault()
+    if (newUserPrincipal) {
+      const userId = resolveUserIdentifier(newUserPrincipal.user)
+      route(`/users/${userId}`)
+    }
+  }
+
   const onClickCreateUser = async (event: Event) => {
     event.preventDefault()
     setShowCreateUserForm(true)
@@ -33,10 +42,10 @@ export function UsersView({ client }: UsersViewProps) {
     event.preventDefault()
     if (createUserEmail === '') {
       const principal = await client.users.createUser()
-      route(`/users/${resolveUserIdentifier(principal.user)}`)
+      setNewUserPrincipal(principal)
     } else {
       const principal = await client.users.createUser(createUserEmail)
-      route(`/users/${resolveUserIdentifier(principal.user)}`)
+      setNewUserPrincipal(principal)
     }
     setShowCreateUserForm(false)
   }
@@ -66,10 +75,19 @@ export function UsersView({ client }: UsersViewProps) {
         </form>
       </>
     )
+  } else if (newUserPrincipal) {
+    return (
+      <>
+        <h1>User Created</h1>
+        <p>Created user with ID: {newUserPrincipal.user.id}</p>
+        <label>Public Key<p>{btoa(newUserPrincipal.publicKeyBase64)}</p></label>
+        <label>Private Key<p>{btoa(newUserPrincipal.privateKeyBase64)}</p></label>
+        <button onClick={onClickConfirmNewUser}>Confirm</button>
+      </>
+    )
   } else {
     return (
       <>
-        <h1>Users</h1>
         <button onClick={onClickCreateUser}>Create User</button>
         <ul>
           {users.map(user => {
