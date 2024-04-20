@@ -1,6 +1,6 @@
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
-import IAM, { User, GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
+import IAM, { User, Session, GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
 import { resolveGroupId, resolveGroupIdentifier } from './util'
 import { resolvePolicyId, resolvePolicyIdentifier } from './util'
 
@@ -68,6 +68,43 @@ function UserPolicies({ client, user }: { client: IAM, user: User }) {
               <tr>
                 <td><a href={`/policies/${policyId}`}>{policyIdentifier}</a></td>
                 <td><button onClick={onClickDelete}>Remove</button></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </>
+  )
+}
+
+
+interface UserSessionsProps {
+  client: IAM
+  user: User
+  sessions: Session[]
+}
+
+
+function UserSessions({ client, user, sessions }: UserSessionsProps) {
+  const onClickDelete = async (event: Event, session: Session) => {
+    event.preventDefault()
+    await client.sessions.deleteSession(session.id, user.id)
+  }
+
+  return (
+    <>
+      <h3>Sessions</h3>
+      <table>
+        <tbody>
+          {sessions.map(session => {
+            return (
+              <tr>
+                <td>{session.id}</td>
+                <td>
+                  <button onClick={(event) => onClickDelete(event, session)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
             )
           })}
@@ -184,6 +221,7 @@ function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
 
 export function UserView({ client, id }: UserViewProps) {
   const [user, setUser] = useState<User | null>(null)
+  const [sessions, setSessions] = useState<Session[]>([])
   const [showAddGroup, setShowAddGroup] = useState(false)
   const [showAddPolicy, setShowAddPolicy] = useState(false)
 
@@ -197,7 +235,13 @@ export function UserView({ client, id }: UserViewProps) {
       setUser(user)
     }
 
+    const getSessions = async () => {
+      const response = await client.sessions.listSessions(id)
+      setSessions(response.items)
+    }
+
     getUser()
+    getSessions()
   }, [id, showAddGroup, showAddPolicy])
 
   if (user === null) {
@@ -223,6 +267,7 @@ export function UserView({ client, id }: UserViewProps) {
       <button onClick={() => setShowAddGroup(true)}>Add Group</button>
       <UserPolicies client={client} user={user} />
       <button onClick={() => setShowAddPolicy(true)}>Add Policy</button>
+      <UserSessions client={client} user={user} sessions={sessions} />
       <button onClick={onClickDelete}>Delete</button>
     </>
   )
