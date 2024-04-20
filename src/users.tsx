@@ -18,7 +18,8 @@ export function UsersView({ client }: UsersViewProps) {
 
   useEffect(() => {
     const getUsers = async () => {
-      const users = await client.users.listUsers()
+      const response = await client.users.listUsers()
+      const users = response.items
       setUsers(users)
     }
 

@@ -123,7 +123,8 @@ export function PoliciesView({ client }: PoliciesViewProps) {
 
   useEffect(() => {
     const getPolicies = async () => {
-      const policies = await client.policies.listPolicies()
+      const response = await client.policies.listPolicies()
+      const policies = response.items
       setPolicies(policies)
     }
 

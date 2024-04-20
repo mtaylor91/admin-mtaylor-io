@@ -95,7 +95,8 @@ function AddUser({ client, group, setShowAddUser }: AddUserProps) {
 
   useEffect(() => {
     const getUsers = async () => {
-      const users = await client.users.listUsers()
+      const response = await client.users.listUsers()
+      const users = response.items
       setUsers(users.filter(user =>
         !group.users.some(groupUser =>
         resolveUserIdentifier(user) === resolveUserIdentifier(groupUser))))
@@ -143,7 +144,8 @@ function AddPolicy({ client, group, setShowAddPolicy }: AddPolicyProps) {
 
   useEffect(() => {
     const getPolicies = async () => {
-      const policies = await client.policies.listPolicies()
+      const response = await client.policies.listPolicies()
+      const policies = response.items
       setPolicies(policies.filter(policy =>
         !group.policies.some(groupPolicy =>
         resolvePolicyIdentifier(policy) === resolvePolicyIdentifier(groupPolicy))))

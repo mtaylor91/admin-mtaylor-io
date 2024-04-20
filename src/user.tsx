@@ -90,7 +90,8 @@ function AddGroup({ client, user, setShowAddGroup }: AddGroupProps) {
 
   useEffect(() => {
     const getGroups = async () => {
-      const groups = await client.groups.listGroups()
+      const response = await client.groups.listGroups()
+      const groups = response.items
       setGroups(groups.filter(group =>
         !user.groups.some(userGroup =>
           resolveGroupIdentifier(userGroup) === resolveGroupIdentifier(group))))
@@ -141,7 +142,8 @@ function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
 
   useEffect(() => {
     const getPolicies = async () => {
-      const policies = await client.policies.listPolicies()
+      const response = await client.policies.listPolicies()
+      const policies = response.items
       setPolicies(policies.filter(policy =>
         !user.policies.some(userPolicy =>
           resolvePolicyIdentifier(userPolicy) === resolvePolicyIdentifier(policy))))

@@ -17,7 +17,8 @@ export function GroupsView({ client }: GroupsViewProps) {
 
   useEffect(() => {
     const getGroups = async () => {
-      const groups = await client.groups.listGroups()
+      const response = await client.groups.listGroups()
+      const groups = response.items
       setGroups(groups)
     }
 
