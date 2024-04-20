@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin-mtaylor-io
+spec:
+  template:
+    spec:
+      containers:
+      - name: nginx
+        image: images.home.mtaylor.io/admin-mtaylor-io:latest
+        ports:
+        - containerPort: 80
+          protocol: TCP
