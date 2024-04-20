@@ -89,7 +89,6 @@ export function UsersView({ client }: UsersViewProps) {
   } else {
     return (
       <>
-        <button onClick={onClickCreateUser}>Create User</button>
         <ul>
           {users.map(user => {
             const userId = resolveUserId(user)
@@ -97,6 +96,7 @@ export function UsersView({ client }: UsersViewProps) {
             return (<li><a href={`/users/${userId}`}>{userIdentifier}</a></li>)
           })}
         </ul>
+        <button onClick={onClickCreateUser}>Create User</button>
       </>
     )
   }

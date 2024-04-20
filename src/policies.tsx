@@ -194,7 +194,6 @@ export function PoliciesView({ client }: PoliciesViewProps) {
   } else {
     return (
       <>
-        <button onClick={onClickCreatePolicy}>Create Policy</button>
         <ul>
           {policies.map(policy => {
             const policyId = resolvePolicyId(policy)
@@ -202,6 +201,7 @@ export function PoliciesView({ client }: PoliciesViewProps) {
             return (<li><a href={`/policies/${policyId}`}>{policyName}</a></li>)
           })}
         </ul>
+        <button onClick={onClickCreatePolicy}>Create Policy</button>
       </>
     )
   }

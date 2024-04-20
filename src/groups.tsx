@@ -69,7 +69,6 @@ export function GroupsView({ client }: GroupsViewProps) {
   } else {
     return (
       <>
-        <button onClick={onClickCreateGroup}>Create Group</button>
         <ul>
           {groups.map(group => {
             const groupId = resolveGroupId(group)
@@ -77,6 +76,7 @@ export function GroupsView({ client }: GroupsViewProps) {
             return (<li><a href={`/groups/${groupId}`}>{groupIdentifier}</a></li>)
           })}
         </ul>
+        <button onClick={onClickCreateGroup}>Create Group</button>
       </>
     )
   }

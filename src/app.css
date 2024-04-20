@@ -1,3 +1,4 @@
+
 #app {
   width: 100vw;
   height: 100vh;
@@ -29,4 +30,19 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+}
+
+.menubar a {
+  padding: 1em;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+.menubar a:hover, .menubar a.active {
+  color: #FFFFFF;
+  background-color: #1a1a1a;
+  border-radius: 0.5em;
+}
+
+.menubar-user {
+  padding: 1em;
 }
