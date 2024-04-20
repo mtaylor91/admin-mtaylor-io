@@ -1,7 +1,8 @@
 import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 import IAM, { Group, UserIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
-import { resolveUserIdentifier, resolvePolicyIdentifier } from './util'
+import { resolveUserId, resolveUserIdentifier } from './util'
+import { resolvePolicyId, resolvePolicyIdentifier } from './util'
 
 
 interface GroupViewProps {
@@ -32,13 +33,14 @@ function GroupUsers({ client, group }: { client: IAM, group: Group }) {
       <table>
         <tbody>
           {group.users.map(user => {
-            const userId = resolveUserIdentifier(user)
+            const userId = resolveUserId(user)
+            const userIdentifier = resolveUserIdentifier(user)
             const onClickDelete = async () => {
               await client.groups.removeMember(group.id, userId)
             }
             return (
               <tr>
-                <td><a href={`/users/${userId}`}>{userId}</a></td>
+                <td><a href={`/users/${userId}`}>{userIdentifier}</a></td>
                 <td><button onClick={onClickDelete}>Remove</button></td>
               </tr>
             )
@@ -57,13 +59,14 @@ function GroupPolicies({ client, group }: { client: IAM, group: Group }) {
       <table>
         <tbody>
           {group.policies.map(policy => {
-            const policyId = resolvePolicyIdentifier(policy)
+            const policyId = resolvePolicyId(policy)
+            const policyIdentifier = resolvePolicyIdentifier(policy)
             const onClickDelete = async () => {
               await client.groups.detachPolicy(group.id, policyId)
             }
             return (
               <tr>
-                <td><a href={`/policies/${policyId}`}>{policyId}</a></td>
+                <td><a href={`/policies/${policyId}`}>{policyIdentifier}</a></td>
                 <td><button onClick={onClickDelete}>Remove</button></td>
               </tr>
             )

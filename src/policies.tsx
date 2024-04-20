@@ -1,7 +1,7 @@
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { PolicyIdentity, Rule, Action, Effect } from 'iam-mtaylor-io-js'
-import { resolvePolicyIdentifier } from './util'
+import { resolvePolicyId, resolvePolicyIdentifier } from './util'
 
 
 interface CreatePolicyStatementViewProps {
@@ -143,14 +143,14 @@ export function PoliciesView({ client }: PoliciesViewProps) {
         statements: newPolicyStatements
       })
 
-      route(`/policies/${resolvePolicyIdentifier(policy)}`)
+      route(`/policies/${resolvePolicyId(policy)}`)
     } else {
       const policy = await client.policies.createPolicy({
         name: newPolicyName, hostname: newPolicyHostname,
         statements: newPolicyStatements
       })
 
-      route(`/policies/${resolvePolicyIdentifier(policy)}`)
+      route(`/policies/${resolvePolicyId(policy)}`)
     }
     setShowCreatePolicy(false)
   }
@@ -196,8 +196,9 @@ export function PoliciesView({ client }: PoliciesViewProps) {
         <button onClick={onClickCreatePolicy}>Create Policy</button>
         <ul>
           {policies.map(policy => {
-            const policyId = resolvePolicyIdentifier(policy)
-            return (<li><a href={`/policies/${policyId}`}>{policyId}</a></li>)
+            const policyId = resolvePolicyId(policy)
+            const policyName = resolvePolicyIdentifier(policy)
+            return (<li><a href={`/policies/${policyId}`}>{policyName}</a></li>)
           })}
         </ul>
       </>

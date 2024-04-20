@@ -1,7 +1,7 @@
 import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 import IAM, { UserIdentity, Principal } from 'iam-mtaylor-io-js'
-import { resolveUserIdentifier } from './util'
+import { resolveUserId, resolveUserIdentifier } from './util'
 
 
 interface UsersViewProps {
@@ -28,7 +28,7 @@ export function UsersView({ client }: UsersViewProps) {
   const onClickConfirmNewUser = async (event: Event) => {
     event.preventDefault()
     if (newUserPrincipal) {
-      const userId = resolveUserIdentifier(newUserPrincipal.user)
+      const userId = resolveUserId(newUserPrincipal.user)
       route(`/users/${userId}`)
     }
   }
@@ -91,8 +91,9 @@ export function UsersView({ client }: UsersViewProps) {
         <button onClick={onClickCreateUser}>Create User</button>
         <ul>
           {users.map(user => {
-            const userId = resolveUserIdentifier(user)
-            return (<li><a href={`/users/${userId}`}>{userId}</a></li>)
+            const userId = resolveUserId(user)
+            const userIdentifier = resolveUserIdentifier(user)
+            return (<li><a href={`/users/${userId}`}>{userIdentifier}</a></li>)
           })}
         </ul>
       </>
