@@ -1,7 +1,7 @@
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { GroupIdentity } from 'iam-mtaylor-io-js'
-import { resolveGroupId, resolveGroupIdentifier } from './util'
+import { resolveGroupId } from './util'
 
 
 interface GroupsViewProps {
@@ -69,14 +69,35 @@ export function GroupsView({ client }: GroupsViewProps) {
   } else {
     return (
       <>
-        <ul>
-          {groups.map(group => {
-            const groupId = resolveGroupId(group)
-            const groupIdentifier = resolveGroupIdentifier(group)
-            return (<li><a href={`/groups/${groupId}`}>{groupIdentifier}</a></li>)
-          })}
-        </ul>
         <button onClick={onClickCreateGroup}>Create Group</button>
+        <table class="background-dark border-radius">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>UUID</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groups.map(group => {
+              return (
+                <tr>
+                  <td>
+                    {group.name &&
+                    <a href={`/groups/${group.name}`}>
+                      {group.name}
+                    </a>
+                    }
+                  </td>
+                  <td>
+                    <a href={`/groups/${group.id}`}>
+                      {group.id}
+                    </a>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </>
     )
   }
