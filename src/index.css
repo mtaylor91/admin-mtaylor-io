@@ -14,12 +14,12 @@
 }
 
 a {
+  color: inherit;
   font-weight: 500;
-  color: #646cff;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  text-decoration: underline;
 }
 
 body {
@@ -30,6 +30,12 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
@@ -49,11 +55,12 @@ button {
   font-weight: 500;
   font-family: inherit;
   color: #ffffff;
-  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
+  background-color: transparent;
 }
 button:hover {
+  background-color: #1a1a1a;
   border-color: #646cff;
 }
 button:focus,

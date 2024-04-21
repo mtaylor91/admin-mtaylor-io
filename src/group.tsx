@@ -15,10 +15,10 @@ interface GroupViewProps {
 function GroupName({ group }: { group: Group }) {
   if (group.name) {
     return (
-      <>
+      <div class="section">
         <h3>Name</h3>
         <p>{group.name}</p>
-      </>
+      </div>
     )
   }
 
@@ -222,13 +222,19 @@ export function GroupView({ client, id }: GroupViewProps) {
 
   return (
     <>
-      <h1>Group</h1>
-      <p>{group.id}</p>
+      <div class="section">
+        <h1>Group</h1>
+        <p>{group.id}</p>
+      </div>
       <GroupName group={group} />
-      <GroupUsers client={client} group={group} />
-      <button onClick={onClickAddUser}>Add User</button>
-      <GroupPolicies client={client} group={group} />
-      <button onClick={onClickAddPolicy}>Add Policy</button>
+      <div class="section">
+        <GroupUsers client={client} group={group} />
+        <button onClick={onClickAddUser}>Add User</button>
+      </div>
+      <div class="section">
+        <GroupPolicies client={client} group={group} />
+        <button onClick={onClickAddPolicy}>Add Policy</button>
+      </div>
       <button onClick={onClickDelete}>Delete</button>
     </>
   )

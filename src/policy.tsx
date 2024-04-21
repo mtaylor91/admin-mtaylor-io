@@ -69,18 +69,24 @@ export function PolicyView({ client, id }: PolicyViewProps) {
 
   return (
     <>
-      <h1>Policy</h1>
-      <p>{policy.id}</p>
+      <div class="section">
+        <h1>Policy</h1>
+        <p>{policy.id}</p>
+      </div>
       {policy.name && (
-      <>
+      <div class="section">
         <h3>Name</h3>
         <p>{policy.name}</p>
-      </>
+      </div>
       )}
-      <h3>Hostname</h3>
-      <p>{policy.hostname}</p>
-      <h3>Statements</h3>
-      <PolicyStatements policy={policy} />
+      <div class="section">
+        <h3>Hostname</h3>
+        <p>{policy.hostname}</p>
+      </div>
+      <div class="section">
+        <h3>Statements</h3>
+        <PolicyStatements policy={policy} />
+      </div>
       <button onClick={onClickDelete}>Delete</button>
     </>
   )

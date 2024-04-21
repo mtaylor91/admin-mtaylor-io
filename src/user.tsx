@@ -15,10 +15,10 @@ interface UserViewProps {
 function UserEmail({ user }: { user: User }) {
   if (user.email) {
     return (
-      <>
+      <div class="section">
         <h3>Email</h3>
         <p>{user.email}</p>
-      </>
+      </div>
     )
   }
 
@@ -260,14 +260,22 @@ export function UserView({ client, id }: UserViewProps) {
 
   return (
     <>
-      <h1>User</h1>
-      <p>{user.id}</p>
+      <div class="section">
+        <h1>User</h1>
+        <p>{user.id}</p>
+      </div>
       <UserEmail user={user} />
-      <UserGroups client={client} user={user} />
-      <button onClick={() => setShowAddGroup(true)}>Add Group</button>
-      <UserPolicies client={client} user={user} />
-      <button onClick={() => setShowAddPolicy(true)}>Add Policy</button>
-      <UserSessions client={client} user={user} sessions={sessions} />
+      <div class="section">
+        <UserGroups client={client} user={user} />
+        <button onClick={() => setShowAddGroup(true)}>Add Group</button>
+      </div>
+      <div class="section">
+        <UserPolicies client={client} user={user} />
+        <button onClick={() => setShowAddPolicy(true)}>Add Policy</button>
+      </div>
+      <div class="section">
+        <UserSessions client={client} user={user} sessions={sessions} />
+      </div>
       <button onClick={onClickDelete}>Delete</button>
     </>
   )

@@ -72,15 +72,17 @@ export function App() {
     return (
       <div class="container">
         <Menu client={client} logout={logout} />
-        <Router>
-          <UsersView path="/" client={client}/>
-          <UsersView path="/users" client={client}/>
-          <UserView path="/users/:id" client={client} />
-          <GroupsView path="/groups" client={client} />
-          <GroupView path="/groups/:id" client={client} />
-          <PoliciesView path="/policies" client={client} />
-          <PolicyView path="/policies/:id" client={client} />
-        </Router>
+        <main>
+          <Router>
+            <UsersView path="/" client={client}/>
+            <UsersView path="/users" client={client}/>
+            <UserView path="/users/:id" client={client} />
+            <GroupsView path="/groups" client={client} />
+            <GroupView path="/groups/:id" client={client} />
+            <PoliciesView path="/policies" client={client} />
+            <PolicyView path="/policies/:id" client={client} />
+          </Router>
+        </main>
       </div>
     )
   }

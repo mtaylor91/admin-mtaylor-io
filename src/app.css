@@ -25,6 +25,12 @@
   gap: 1em;
 }
 
+.section {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
+}
+
 .menubar {
   width: 100%;
   display: flex;
@@ -41,6 +47,7 @@
   color: #FFFFFF;
   background-color: #1a1a1a;
   border-radius: 0.5em;
+  text-decoration: none;
 }
 
 .menubar-user {
