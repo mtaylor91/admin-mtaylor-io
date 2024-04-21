@@ -11,15 +11,6 @@ export function resolveUserId(user: User | UserIdentity): string {
 }
 
 
-export function resolveUserEmail(user: User | UserIdentity): string {
-  if (typeof user === 'string') {
-    return undefined
-  } else {
-    return user.email
-  }
-}
-
-
 export function resolveUserIdentifier(user: User | UserIdentity): string {
   if (typeof user === 'string') {
     return user

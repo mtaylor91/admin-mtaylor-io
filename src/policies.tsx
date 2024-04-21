@@ -1,7 +1,7 @@
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { PolicyIdentity, Rule, Action, Effect } from 'iam-mtaylor-io-js'
-import { resolvePolicyId, resolvePolicyIdentifier } from './util'
+import { resolvePolicyId } from './util'
 
 
 interface CreatePolicyStatementViewProps {

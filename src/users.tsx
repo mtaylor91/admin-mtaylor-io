@@ -4,6 +4,45 @@ import IAM, { UserIdentity, Principal } from 'iam-mtaylor-io-js'
 import { resolveUserId, resolveUserIdentifier } from './util'
 
 
+interface UsersTableProps {
+  users: UserIdentity[]
+}
+
+
+function UsersTable({ users }: UsersTableProps) {
+  return (
+    <table class="background-dark border-radius">
+      <thead>
+        <tr>
+          <th><span>Email</span></th>
+          <th><span>UUID</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.map(user => {
+          return (
+            <tr>
+              <td>
+                {user.email &&
+                <a href={`/users/${resolveUserIdentifier(user)}`}>
+                  {user.email}
+                </a>
+                }
+              </td>
+              <td>
+                <a href={`/users/${resolveUserId(user)}`}>
+                  {resolveUserId(user)}
+                </a>
+              </td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  )
+}
+
+
 interface UsersViewProps {
   client: IAM,
   path?: string
@@ -18,9 +57,14 @@ export function UsersView({ client }: UsersViewProps) {
 
   useEffect(() => {
     const getUsers = async () => {
-      const response = await client.users.listUsers()
-      const users = response.items
-      setUsers(users)
+      try {
+        const response = await client.users.listUsers()
+        const users = response.items
+        setUsers(users)
+      } catch (error) {
+        console.error(error)
+        throw error
+      }
     }
 
     getUsers()
@@ -90,34 +134,7 @@ export function UsersView({ client }: UsersViewProps) {
     return (
       <>
         <button onClick={onClickCreateUser}>Create User</button>
-        <table class="background-dark border-radius">
-          <thead>
-            <tr>
-              <th><span>Email</span></th>
-              <th><span>UUID</span></th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map(user => {
-              return (
-                <tr>
-                  <td>
-                    {user.email &&
-                    <a href={`/users/${resolveUserIdentifier(user)}`}>
-                      {user.email}
-                    </a>
-                    }
-                  </td>
-                  <td>
-                    <a href={`/users/${resolveUserId(user)}`}>
-                      {resolveUserId(user)}
-                    </a>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <UsersTable users={users} />
       </>
     )
   }

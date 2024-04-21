@@ -1,7 +1,7 @@
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { GroupIdentity } from 'iam-mtaylor-io-js'
-import { resolveGroupId, resolveGroupIdentifier } from './util'
+import { resolveGroupId } from './util'
 
 
 interface GroupsViewProps {
