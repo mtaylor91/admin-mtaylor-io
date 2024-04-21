@@ -194,14 +194,35 @@ export function PoliciesView({ client }: PoliciesViewProps) {
   } else {
     return (
       <>
-        <ul>
-          {policies.map(policy => {
-            const policyId = resolvePolicyId(policy)
-            const policyName = resolvePolicyIdentifier(policy)
-            return (<li><a href={`/policies/${policyId}`}>{policyName}</a></li>)
-          })}
-        </ul>
         <button onClick={onClickCreatePolicy}>Create Policy</button>
+        <table class="background-dark border-radius">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>UUID</th>
+            </tr>
+          </thead>
+          <tbody>
+            {policies.map(policy => {
+              return (
+                <tr>
+                  <td>
+                    {policy.name &&
+                    <a href={`/policies/${policy.name}`}>
+                      {policy.name}
+                    </a>
+                    }
+                  </td>
+                  <td>
+                    <a href={`/policies/${policy.id}`}>
+                      {policy.id}
+                    </a>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </>
     )
   }

@@ -89,14 +89,35 @@ export function UsersView({ client }: UsersViewProps) {
   } else {
     return (
       <>
-        <ul>
-          {users.map(user => {
-            const userId = resolveUserId(user)
-            const userIdentifier = resolveUserIdentifier(user)
-            return (<li><a href={`/users/${userId}`}>{userIdentifier}</a></li>)
-          })}
-        </ul>
         <button onClick={onClickCreateUser}>Create User</button>
+        <table class="background-dark border-radius">
+          <thead>
+            <tr>
+              <th><span>Email</span></th>
+              <th><span>UUID</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => {
+              return (
+                <tr>
+                  <td>
+                    {user.email &&
+                    <a href={`/users/${resolveUserIdentifier(user)}`}>
+                      {user.email}
+                    </a>
+                    }
+                  </td>
+                  <td>
+                    <a href={`/users/${resolveUserId(user)}`}>
+                      {resolveUserId(user)}
+                    </a>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </>
     )
   }
