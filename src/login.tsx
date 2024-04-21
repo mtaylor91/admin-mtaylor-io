@@ -19,7 +19,7 @@ export function Login({login, email, secretKey, setEmail, setSecretKey}: LoginPr
   }
 
   return (
-    <form onSubmit={e => { e.preventDefault(); login() }}>
+    <form class="login" onSubmit={e => { e.preventDefault(); login() }}>
       <h1>Login</h1>
       <input id="email" type="text" placeholder="Email"
         value={email} onInput={onInputEmail} />

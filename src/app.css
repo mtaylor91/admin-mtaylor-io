@@ -53,3 +53,25 @@
 .menubar-user {
   padding: 1em;
 }
+
+.login {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.login h1 {
+  margin-bottom: 0.5em;
+}
+
+.login input {
+  text-align: center;
+}
+
+.login #email {
+  border-radius: 0.5em 0.5em 0 0;
+}
+
+.login #password {
+  border-radius: 0 0 0.5em 0.5em;
+}
