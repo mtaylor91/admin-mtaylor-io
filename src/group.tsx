@@ -17,7 +17,7 @@ function GroupName({ group }: { group: Group }) {
     return (
       <div class="section">
         <h3>Name</h3>
-        <p>{group.name}</p>
+        <p class="background-dark border-radius">{group.name}</p>
       </div>
     )
   }
@@ -30,7 +30,7 @@ function GroupUsers({ client, group }: { client: IAM, group: Group }) {
   return (
     <>
       <h3>Users</h3>
-      <table>
+      <table class="background-dark border-radius-top">
         <tbody>
           {group.users.map(user => {
             const userId = resolveUserId(user)
@@ -56,7 +56,7 @@ function GroupPolicies({ client, group }: { client: IAM, group: Group }) {
   return (
     <>
       <h3>Policies</h3>
-      <table>
+      <table class="background-dark border-radius-top">
         <tbody>
           {group.policies.map(policy => {
             const policyId = resolvePolicyId(policy)
@@ -229,11 +229,13 @@ export function GroupView({ client, id }: GroupViewProps) {
       <GroupName group={group} />
       <div class="section">
         <GroupUsers client={client} group={group} />
-        <button onClick={onClickAddUser}>Add User</button>
+        <button class="background-dark border-radius-bottom"
+          onClick={onClickAddUser}>Add User</button>
       </div>
       <div class="section">
         <GroupPolicies client={client} group={group} />
-        <button onClick={onClickAddPolicy}>Add Policy</button>
+        <button class="background-dark border-radius-bottom"
+          onClick={onClickAddPolicy}>Add Policy</button>
       </div>
       <button onClick={onClickDelete}>Delete</button>
     </>

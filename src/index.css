@@ -33,9 +33,12 @@ body {
 }
 
 main {
+  width: 100%;
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
   align-items: center;
+  overflow: auto;
 }
 
 h1 {
@@ -48,7 +51,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 button {
-  border-radius: 8px;
+  border-radius: 0.5em;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
@@ -100,8 +103,8 @@ table {
   border-collapse: collapse;
 }
 
-td, th {
-  padding: 0.5em;
+td a, th a, td span, th span {
+  padding: 0.6em 1.2em;
 }
 
 ul {

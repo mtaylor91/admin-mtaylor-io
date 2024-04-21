@@ -17,7 +17,7 @@ function UserEmail({ user }: { user: User }) {
     return (
       <div class="section">
         <h3>Email</h3>
-        <p>{user.email}</p>
+        <p class="background-dark border-radius">{user.email}</p>
       </div>
     )
   }
@@ -30,7 +30,7 @@ function UserGroups({ client, user }: { client: IAM, user: User }) {
   return (
     <>
       <h3>Groups</h3>
-      <table>
+      <table class="background-dark border-radius-top">
         <tbody>
           {user.groups.map(group => {
             const groupId = resolveGroupId(group)
@@ -56,7 +56,7 @@ function UserPolicies({ client, user }: { client: IAM, user: User }) {
   return (
     <>
       <h3>Policies</h3>
-      <table>
+      <table class="background-dark border-radius-top">
         <tbody>
           {user.policies.map(policy => {
             const policyId = resolvePolicyId(policy)
@@ -94,12 +94,12 @@ function UserSessions({ client, user, sessions }: UserSessionsProps) {
   return (
     <>
       <h3>Sessions</h3>
-      <table>
+      <table class="background-dark border-radius">
         <tbody>
           {sessions.map(session => {
             return (
               <tr>
-                <td>{session.id}</td>
+                <td><span>{session.id}</span></td>
                 <td>
                   <button onClick={(event) => onClickDelete(event, session)}>
                     Delete
@@ -267,11 +267,17 @@ export function UserView({ client, id }: UserViewProps) {
       <UserEmail user={user} />
       <div class="section">
         <UserGroups client={client} user={user} />
-        <button onClick={() => setShowAddGroup(true)}>Add Group</button>
+        <button class="background-dark border-radius-bottom"
+          onClick={() => setShowAddGroup(true)}>
+          Add Group
+        </button>
       </div>
       <div class="section">
         <UserPolicies client={client} user={user} />
-        <button onClick={() => setShowAddPolicy(true)}>Add Policy</button>
+        <button class="background-dark border-radius-bottom"
+          onClick={() => setShowAddPolicy(true)}>
+          Add Policy
+        </button>
       </div>
       <div class="section">
         <UserSessions client={client} user={user} sessions={sessions} />

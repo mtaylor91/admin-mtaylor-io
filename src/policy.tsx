@@ -10,21 +10,21 @@ interface PolicyStatementsProps {
 
 function PolicyStatements({ policy }: PolicyStatementsProps) {
   return (
-    <table>
+    <table class="background-dark border-radius">
       <thead>
         <tr>
-          <th>Effect</th>
-          <th>Action</th>
-          <th>Resource</th>
+          <th><span>Effect</span></th>
+          <th><span>Action</span></th>
+          <th><span>Resource</span></th>
         </tr>
       </thead>
       <tbody>
         {policy.statements.map((statement) => {
           return (
             <tr>
-              <td>{statement.effect}</td>
-              <td>{statement.action}</td>
-              <td>{statement.resource}</td>
+              <td><span>{statement.effect}</span></td>
+              <td><span>{statement.action}</span></td>
+              <td><span>{statement.resource}</span></td>
             </tr>
           )
         })}
@@ -76,12 +76,12 @@ export function PolicyView({ client, id }: PolicyViewProps) {
       {policy.name && (
       <div class="section">
         <h3>Name</h3>
-        <p>{policy.name}</p>
+        <p class="background-dark border-radius">{policy.name}</p>
       </div>
       )}
       <div class="section">
         <h3>Hostname</h3>
-        <p>{policy.hostname}</p>
+        <p class="background-dark border-radius">{policy.hostname}</p>
       </div>
       <div class="section">
         <h3>Statements</h3>
