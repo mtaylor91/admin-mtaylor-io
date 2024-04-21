@@ -54,21 +54,25 @@ export function UsersView({ client }: UsersViewProps) {
   const [showCreateUserForm, setShowCreateUserForm] = useState(false)
   const [createUserEmail, setCreateUserEmail] = useState('')
   const [newUserPrincipal, setNewUserPrincipal] = useState<Principal | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const getUsers = async () => {
       try {
         const response = await client.users.listUsers()
         const users = response.items
+        setError(null)
         setUsers(users)
       } catch (error) {
-        console.error(error)
+        setError(error.response?.data?.error || error.message)
         throw error
       }
     }
 
-    getUsers()
-  }, [])
+    if (!showCreateUserForm) {
+      getUsers()
+    }
+  }, [showCreateUserForm])
 
   const onClickConfirmNewUser = async (event: Event) => {
     event.preventDefault()
@@ -81,17 +85,25 @@ export function UsersView({ client }: UsersViewProps) {
   const onClickCreateUser = async (event: Event) => {
     event.preventDefault()
     setShowCreateUserForm(true)
+    setError(null)
   }
 
   const onSubmitCreateUser = async (event: Event) => {
     event.preventDefault()
-    if (createUserEmail === '') {
-      const principal = await client.users.createUser()
-      setNewUserPrincipal(principal)
-    } else {
-      const principal = await client.users.createUser(createUserEmail)
-      setNewUserPrincipal(principal)
+
+    try {
+      if (createUserEmail === '') {
+        const principal = await client.users.createUser()
+        setNewUserPrincipal(principal)
+      } else {
+        const principal = await client.users.createUser(createUserEmail)
+        setNewUserPrincipal(principal)
+      }
+    } catch (error) {
+      setError(error.response?.data?.error || error.message)
+      throw error
     }
+
     setShowCreateUserForm(false)
   }
 
@@ -109,6 +121,7 @@ export function UsersView({ client }: UsersViewProps) {
     return (
       <>
         <h1>Create User</h1>
+        {error && <p class="error">{error}</p>}
         <form onSubmit={onSubmitCreateUser}>
           <label>
             Email
@@ -135,6 +148,7 @@ export function UsersView({ client }: UsersViewProps) {
       <>
         <button onClick={onClickCreateUser}>Create User</button>
         <UsersTable users={users} />
+        {error && <p class="error">{error}</p>}
       </>
     )
   }
