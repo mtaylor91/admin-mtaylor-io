@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { PolicyIdentity, Rule, Action, Effect } from 'iam-mtaylor-io-js'
@@ -115,6 +116,7 @@ interface PoliciesViewProps {
 
 
 export function PoliciesView({ client }: PoliciesViewProps) {
+  const [error, setError] = useState<string | null>(null)
   const [policies, setPolicies] = useState<PolicyIdentity[]>([])
   const [showCreatePolicy, setShowCreatePolicy] = useState(false)
   const [newPolicyName, setNewPolicyName] = useState('')
@@ -123,9 +125,18 @@ export function PoliciesView({ client }: PoliciesViewProps) {
 
   useEffect(() => {
     const getPolicies = async () => {
-      const response = await client.policies.listPolicies()
-      const policies = response.items
-      setPolicies(policies)
+      try {
+        const response = await client.policies.listPolicies()
+        const policies = response.items
+        setPolicies(policies)
+        setError(null)
+      } catch (err) {
+        const error = err as Error | AxiosError
+        if (!axios.isAxiosError(error))
+          throw error
+        setError(error.response?.data?.error || error.message)
+        throw error
+      }
     }
 
     getPolicies()
@@ -223,6 +234,7 @@ export function PoliciesView({ client }: PoliciesViewProps) {
             })}
           </tbody>
         </table>
+        {error && <p class="error">{error}</p>}
       </>
     )
   }
