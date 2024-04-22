@@ -96,11 +96,23 @@ function UserSessions({ client, user, sessions }: UserSessionsProps) {
     <>
       <h3>Sessions</h3>
       <table class="background-dark border-radius">
+        <thead>
+          <tr>
+            <th>Session</th>
+            <th>Address</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           {sessions.map(session => {
             return (
               <tr>
-                <td><span>{session.id}</span></td>
+                <td>
+                  <span>{session.id}</span>
+                </td>
+                <td>
+                  <span>{session.address}</span>
+                </td>
                 <td>
                   <button onClick={(event) => onClickDelete(event, session)}>
                     Delete
