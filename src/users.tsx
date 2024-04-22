@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 import IAM, { UserIdentity, Principal } from 'iam-mtaylor-io-js'
@@ -63,7 +64,10 @@ export function UsersView({ client }: UsersViewProps) {
         const users = response.items
         setError(null)
         setUsers(users)
-      } catch (error) {
+      } catch (err) {
+        const error = err as Error | AxiosError
+        if (!axios.isAxiosError(error))
+          throw error
         setError(error.response?.data?.error || error.message)
         throw error
       }
@@ -99,7 +103,10 @@ export function UsersView({ client }: UsersViewProps) {
         const principal = await client.users.createUser(createUserEmail)
         setNewUserPrincipal(principal)
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error | AxiosError
+      if (!axios.isAxiosError(error))
+        throw error
       setError(error.response?.data?.error || error.message)
       throw error
     }
