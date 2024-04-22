@@ -2,11 +2,11 @@ import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 import IAM, { Group, UserIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
-import { resolveUserId, resolveUserIdentifier } from './util'
-import { resolvePolicyId, resolvePolicyIdentifier } from './util'
+import { resolveUserId, resolveUserIdentifier } from '../util'
+import { resolvePolicyId, resolvePolicyIdentifier } from '../util'
 
 
-interface GroupViewProps {
+interface ShowGroupProps {
   client: IAM
   id?: string
   path?: string
@@ -177,7 +177,7 @@ function AddPolicy({ client, group, setShowAddPolicy }: AddPolicyProps) {
 }
 
 
-export function GroupView({ client, id }: GroupViewProps) {
+export function ShowGroup({ client, id }: ShowGroupProps) {
   const [error, setError] = useState<string | null>(null)
   const [group, setGroup] = useState<Group | null>(null)
   const [showAddUser, setShowAddUser] = useState(false)

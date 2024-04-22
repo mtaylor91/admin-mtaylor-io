@@ -1,21 +1,26 @@
 import Router from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
+
 import IAM from 'iam-mtaylor-io-js'
+
+import { CreateGroup } from './create/group'
+import { CreatePolicy } from './create/policy'
+import { CreateUser } from './create/user'
 import { Login } from './login'
 import { Menu } from './menu'
-import { UserView } from './user'
-import { UsersView } from './users'
-import { GroupView } from './group'
-import { GroupsView } from './groups'
-import { PolicyView } from './policy'
-import { PoliciesView } from './policies'
+import { ShowUser } from './show/user'
+import { ShowGroups } from './show/groups'
+import { ShowPolicy } from './show/policy'
+import { ShowPolicies } from './show/policies'
+import { ShowUsers } from './show/users'
+import { ShowGroup } from './show/group'
 import './app.css'
 
 
 export function App() {
-  const [client, setClient] = useState<IAM | null>(null)
   const [email, setEmail] = useState<string>('')
   const [secretKey, setSecretKey] = useState<string>('')
+  const [client, setClient] = useState<IAM | null>(null)
 
   const login = async () => {
     const iam = new IAM()
@@ -74,13 +79,16 @@ export function App() {
         <Menu client={client} logout={logout} />
         <main>
           <Router>
-            <UsersView path="/" client={client}/>
-            <UsersView path="/users" client={client}/>
-            <UserView path="/users/:id" client={client} />
-            <GroupsView path="/groups" client={client} />
-            <GroupView path="/groups/:id" client={client} />
-            <PoliciesView path="/policies" client={client} />
-            <PolicyView path="/policies/:id" client={client} />
+            <ShowUsers path="/" client={client}/>
+            <CreateGroup path="/create/group" client={client}/>
+            <CreatePolicy path="/create/policy" client={client}/>
+            <CreateUser path="/create/user" client={client}/>
+            <ShowUsers path="/users" client={client}/>
+            <ShowUser path="/users/:id" client={client} />
+            <ShowGroups path="/groups" client={client} />
+            <ShowGroup path="/groups/:id" client={client} />
+            <ShowPolicies path="/policies" client={client} />
+            <ShowPolicy path="/policies/:id" client={client} />
           </Router>
         </main>
       </div>

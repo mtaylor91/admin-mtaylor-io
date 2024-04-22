@@ -1,8 +1,8 @@
 import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
-import { useEffect, useState } from 'preact/hooks'
-import IAM, { PolicyIdentity, Rule, Action, Effect } from 'iam-mtaylor-io-js'
-import { resolvePolicyId } from './util'
+import { useState } from 'preact/hooks'
+import IAM, { Rule, Action, Effect } from 'iam-mtaylor-io-js'
+import { resolvePolicyId } from '../util'
 
 
 interface CreatePolicyStatementViewProps {
@@ -109,67 +109,43 @@ function CreatePolicyStatementsView({
 }
 
 
-interface PoliciesViewProps {
+interface CreatePolicyProps {
   client: IAM
   path?: string
 }
 
 
-export function PoliciesView({ client }: PoliciesViewProps) {
+export function CreatePolicy({ client }: CreatePolicyProps) {
   const [error, setError] = useState<string | null>(null)
-  const [policies, setPolicies] = useState<PolicyIdentity[]>([])
-  const [showCreatePolicy, setShowCreatePolicy] = useState(false)
   const [newPolicyName, setNewPolicyName] = useState('')
   const [newPolicyHostname, setNewPolicyHostname] = useState('')
   const [newPolicyStatements, setNewPolicyStatements] = useState<Rule[]>([])
 
-  useEffect(() => {
-    const getPolicies = async () => {
-      try {
-        const response = await client.policies.listPolicies()
-        const policies = response.items
-        setPolicies(policies)
-        setError(null)
-      } catch (err) {
-        const error = err as Error | AxiosError
-        if (!axios.isAxiosError(error))
-          throw error
-        setError(error.response?.data?.error || error.message)
-        throw error
-      }
-    }
-
-    getPolicies()
-  }, [])
-
-  const onClickCreatePolicy = async (event: Event) => {
-    event.preventDefault()
-    setShowCreatePolicy(true)
-  }
-
   const onSubmitCreatePolicy = async (event: Event) => {
     event.preventDefault()
-    if (newPolicyName === '') {
-      const policy = await client.policies.createPolicy({
-        hostname: newPolicyHostname,
-        statements: newPolicyStatements
-      })
+    try {
+      if (newPolicyName === '') {
+        const policy = await client.policies.createPolicy({
+          hostname: newPolicyHostname,
+          statements: newPolicyStatements
+        })
 
-      route(`/policies/${resolvePolicyId(policy)}`)
-    } else {
-      const policy = await client.policies.createPolicy({
-        name: newPolicyName, hostname: newPolicyHostname,
-        statements: newPolicyStatements
-      })
+        route(`/policies/${resolvePolicyId(policy)}`)
+      } else {
+        const policy = await client.policies.createPolicy({
+          name: newPolicyName, hostname: newPolicyHostname,
+          statements: newPolicyStatements
+        })
 
-      route(`/policies/${resolvePolicyId(policy)}`)
+        route(`/policies/${resolvePolicyId(policy)}`)
+      }
+    } catch (err) {
+      const error = err as Error | AxiosError
+      if (!axios.isAxiosError(error))
+        throw error
+      setError(error.response?.data?.error || error.message)
+      throw error
     }
-    setShowCreatePolicy(false)
-  }
-
-  const onCancelCreatePolicy = async (event: Event) => {
-    event.preventDefault()
-    setShowCreatePolicy(false)
   }
 
   const onInputNewPolicyName = async (event: Event) => {
@@ -182,60 +158,26 @@ export function PoliciesView({ client }: PoliciesViewProps) {
     setNewPolicyHostname(target.value)
   }
 
-  if (showCreatePolicy) {
-    return (
-      <>
-        <h1>Create Policy</h1>
-        <form onSubmit={onSubmitCreatePolicy}>
-          <label>
-            Name
-            <input type="text" onInput={onInputNewPolicyName} />
-          </label>
-          <label>
-            Hostname
-            <input type="text" onInput={onInputNewPolicyHostname} />
-          </label>
-          <CreatePolicyStatementsView statements={newPolicyStatements}
-            setStatements={setNewPolicyStatements} />
-          <button type="submit">Create</button>
-          <button onClick={onCancelCreatePolicy}>Cancel</button>
-        </form>
-      </>
-    )
-  } else {
-    return (
-      <>
-        <button onClick={onClickCreatePolicy}>Create Policy</button>
-        <table class="background-dark border-radius">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>UUID</th>
-            </tr>
-          </thead>
-          <tbody>
-            {policies.map(policy => {
-              return (
-                <tr>
-                  <td>
-                    {policy.name &&
-                    <a href={`/policies/${policy.name}`}>
-                      {policy.name}
-                    </a>
-                    }
-                  </td>
-                  <td>
-                    <a href={`/policies/${policy.id}`}>
-                      {policy.id}
-                    </a>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+  return (
+    <>
+      <div class="menubar">
         {error && <p class="error">{error}</p>}
-      </>
-    )
-  }
+      </div>
+      <form onSubmit={onSubmitCreatePolicy}>
+        <label>
+          Name
+          <input type="text" onInput={onInputNewPolicyName} />
+        </label>
+        <label>
+          Hostname
+          <input type="text" onInput={onInputNewPolicyHostname} />
+        </label>
+        <CreatePolicyStatementsView statements={newPolicyStatements}
+          setStatements={setNewPolicyStatements} />
+        <button type="submit">Create</button>
+      </form>
+      <div class="menubar">
+      </div>
+    </>
+  )
 }

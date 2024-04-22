@@ -2,8 +2,8 @@ import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { User, Session, GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
-import { resolveGroupId, resolveGroupIdentifier } from './util'
-import { resolvePolicyId, resolvePolicyIdentifier } from './util'
+import { resolveGroupId, resolveGroupIdentifier } from '../util'
+import { resolvePolicyId, resolvePolicyIdentifier } from '../util'
 
 
 interface UserViewProps {
@@ -232,7 +232,7 @@ function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
 }
 
 
-export function UserView({ client, id }: UserViewProps) {
+export function ShowUser({ client, id }: UserViewProps) {
   const [user, setUser] = useState<User | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [sessions, setSessions] = useState<Session[]>([])

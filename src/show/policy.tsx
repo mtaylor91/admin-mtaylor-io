@@ -35,14 +35,14 @@ function PolicyStatements({ policy }: PolicyStatementsProps) {
 }
 
 
-interface PolicyViewProps {
+interface ShowPolicyProps {
   client: IAM
   id?: string
   path?: string
 }
 
 
-export function PolicyView({ client, id }: PolicyViewProps) {
+export function ShowPolicy({ client, id }: ShowPolicyProps) {
   const [policy, setPolicy] = useState<Policy | null>(null)
   const [error, setError] = useState<string | null>(null)
 
