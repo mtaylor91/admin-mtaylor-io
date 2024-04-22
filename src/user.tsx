@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { User, Session, GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
@@ -221,7 +222,9 @@ function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
 
 export function UserView({ client, id }: UserViewProps) {
   const [user, setUser] = useState<User | null>(null)
+  const [error, setError] = useState<string | null>(null)
   const [sessions, setSessions] = useState<Session[]>([])
+  const [sessionsError, setSessionsError] = useState<string | null>(null)
   const [showAddGroup, setShowAddGroup] = useState(false)
   const [showAddPolicy, setShowAddPolicy] = useState(false)
 
@@ -231,13 +234,31 @@ export function UserView({ client, id }: UserViewProps) {
     }
 
     const getUser = async () => {
-      const user = await client.users.getUser(id)
-      setUser(user)
+      try {
+        const user = await client.users.getUser(id)
+        setUser(user)
+        setError(null)
+      } catch (err) {
+        const error = err as Error | AxiosError
+        if (!axios.isAxiosError(error))
+          throw error
+        setError(error.response?.data?.error || error.message)
+        throw error
+      }
     }
 
     const getSessions = async () => {
-      const response = await client.sessions.listSessions(id)
-      setSessions(response.items)
+      try {
+        const response = await client.sessions.listSessions(id)
+        setSessions(response.items)
+        setSessionsError(null)
+      } catch (err) {
+        const error = err as Error | AxiosError
+        if (!axios.isAxiosError(error))
+          throw error
+        setSessionsError(error.response?.data?.error || error.message)
+        throw error
+      }
     }
 
     getUser()
@@ -245,7 +266,7 @@ export function UserView({ client, id }: UserViewProps) {
   }, [id, showAddGroup, showAddPolicy])
 
   if (user === null) {
-    return <div>Loading...</div>
+    return error ? <p class="error">{error}</p> : <p>Loading...</p>
   } else if (showAddGroup) {
     return <AddGroup client={client} user={user} setShowAddGroup={setShowAddGroup} />
   } else if (showAddPolicy) {
@@ -262,6 +283,7 @@ export function UserView({ client, id }: UserViewProps) {
     <>
       <div class="section">
         <h1>User</h1>
+        {error && <p class="error">{error}</p>}
         <p>{user.id}</p>
       </div>
       <UserEmail user={user} />
@@ -280,6 +302,7 @@ export function UserView({ client, id }: UserViewProps) {
         </button>
       </div>
       <div class="section">
+        {sessionsError && <p class="error">{sessionsError}</p>}
         <UserSessions client={client} user={user} sessions={sessions} />
       </div>
       <button onClick={onClickDelete}>Delete</button>
