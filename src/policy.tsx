@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 import IAM, { Policy } from 'iam-mtaylor-io-js'
@@ -43,6 +44,7 @@ interface PolicyViewProps {
 
 export function PolicyView({ client, id }: PolicyViewProps) {
   const [policy, setPolicy] = useState<Policy | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (id === undefined) {
@@ -50,15 +52,24 @@ export function PolicyView({ client, id }: PolicyViewProps) {
     }
 
     const getPolicy = async () => {
-      const policy = await client.policies.getPolicy(id)
-      setPolicy(policy)
+      try {
+        const policy = await client.policies.getPolicy(id)
+        setPolicy(policy)
+        setError(null)
+      } catch (err) {
+        const error = err as Error | AxiosError
+        if (!axios.isAxiosError(error))
+          throw error
+        setError(error.response?.data?.error || error.message)
+        throw error
+      }
     }
 
     getPolicy()
   }, [id])
 
   if (id === undefined || policy === null) {
-    return <div>Loading...</div>
+    return error ? <p class="error">{error}</p> : <p>Loading...</p>
   }
 
   const onClickDelete = async (event: Event) => {
@@ -71,6 +82,7 @@ export function PolicyView({ client, id }: PolicyViewProps) {
     <>
       <div class="section">
         <h1>Policy</h1>
+        {error && <p class="error">{error}</p>}
         <p>{policy.id}</p>
       </div>
       {policy.name && (
