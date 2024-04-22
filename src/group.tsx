@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 import IAM, { Group, UserIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
@@ -177,6 +178,7 @@ function AddPolicy({ client, group, setShowAddPolicy }: AddPolicyProps) {
 
 
 export function GroupView({ client, id }: GroupViewProps) {
+  const [error, setError] = useState<string | null>(null)
   const [group, setGroup] = useState<Group | null>(null)
   const [showAddUser, setShowAddUser] = useState(false)
   const [showAddPolicy, setShowAddPolicy] = useState(false)
@@ -187,15 +189,24 @@ export function GroupView({ client, id }: GroupViewProps) {
     }
 
     const getGroup = async () => {
-      const group = await client.groups.getGroup(id)
-      setGroup(group)
+      try {
+        const group = await client.groups.getGroup(id)
+        setGroup(group)
+        setError(null)
+      } catch (err) {
+        const error = err as Error | AxiosError
+        if (!axios.isAxiosError(error))
+          throw error
+        setError(error.response?.data?.error || error.message)
+        throw error
+      }
     }
 
     getGroup()
   }, [id, showAddUser, showAddPolicy])
 
   if (group === null) {
-    return <div>Loading...</div>
+    return error ? <p class="error">{error}</p> : <p>Loading...</p>
   } else if (showAddUser) {
     return <AddUser client={client} group={group} setShowAddUser={setShowAddUser} />
   } else if (showAddPolicy) {

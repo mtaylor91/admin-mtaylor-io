@@ -1,7 +1,68 @@
+import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { GroupIdentity } from 'iam-mtaylor-io-js'
 import { resolveGroupId } from './util'
+
+
+interface CreateGroupFormProps {
+  onSubmit: (event: Event) => void
+  onCancel: (event: Event) => void
+  onInput: (event: Event) => void
+}
+
+
+function CreateGroupForm({ onSubmit, onCancel, onInput }: CreateGroupFormProps) {
+  return (
+    <form onSubmit={onSubmit}>
+      <label>
+        Name
+        <input type="text" onInput={onInput} />
+      </label>
+      <button type="submit">Create</button>
+      <button onClick={onCancel}>Cancel</button>
+    </form>
+  )
+}
+
+
+interface GroupsTableProps {
+  groups: GroupIdentity[]
+}
+
+
+function GroupsTable({ groups }: GroupsTableProps) {
+  return (
+    <table class="background-dark border-radius">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>UUID</th>
+        </tr>
+      </thead>
+      <tbody>
+        {groups.map(group => {
+          return (
+            <tr>
+              <td>
+                {group.name &&
+                <a href={`/groups/${group.name}`}>
+                  {group.name}
+                </a>
+                }
+              </td>
+              <td>
+                <a href={`/groups/${group.id}`}>
+                  {group.id}
+                </a>
+              </td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+  )
+}
 
 
 interface GroupsViewProps {
@@ -11,15 +72,25 @@ interface GroupsViewProps {
 
 
 export function GroupsView({ client }: GroupsViewProps) {
+  const [error, setError] = useState<string | null>(null)
   const [groups, setGroups] = useState<GroupIdentity[]>([])
   const [showCreateGroup, setShowCreateGroup] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
 
   useEffect(() => {
     const getGroups = async () => {
-      const response = await client.groups.listGroups()
-      const groups = response.items
-      setGroups(groups)
+      try {
+        const response = await client.groups.listGroups()
+        const groups = response.items
+        setGroups(groups)
+        setError(null)
+      } catch (err) {
+        const error = err as Error | AxiosError
+        if (!axios.isAxiosError(error))
+          throw error
+        setError(error.response?.data?.error || error.message)
+        throw error
+      }
     }
 
     getGroups()
@@ -56,48 +127,19 @@ export function GroupsView({ client }: GroupsViewProps) {
     return (
       <>
         <h1>Create Group</h1>
-        <form onSubmit={onSubmitCreateGroup}>
-          <label>
-            Name
-            <input type="text" onInput={onInputNewGroupName} />
-          </label>
-          <button type="submit">Create</button>
-          <button onClick={onCancelCreateGroup}>Cancel</button>
-        </form>
+        {error && <p class="error">{error}</p>}
+        <CreateGroupForm
+          onSubmit={onSubmitCreateGroup}
+          onCancel={onCancelCreateGroup}
+          onInput={onInputNewGroupName}/>
       </>
     )
   } else {
     return (
       <>
         <button onClick={onClickCreateGroup}>Create Group</button>
-        <table class="background-dark border-radius">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>UUID</th>
-            </tr>
-          </thead>
-          <tbody>
-            {groups.map(group => {
-              return (
-                <tr>
-                  <td>
-                    {group.name &&
-                    <a href={`/groups/${group.name}`}>
-                      {group.name}
-                    </a>
-                    }
-                  </td>
-                  <td>
-                    <a href={`/groups/${group.id}`}>
-                      {group.id}
-                    </a>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <GroupsTable groups={groups} />
+        {error && <p class="error">{error}</p>}
       </>
     )
   }
