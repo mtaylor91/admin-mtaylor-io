@@ -105,13 +105,15 @@ function UserSessions({ client, user, sessions }: UserSessionsProps) {
         </thead>
         <tbody>
           {sessions.map(session => {
+            const idClass = session.id === client.sessionId ? 'bold' : ''
+            const addressClass = session.address === client.sessionAddress ? 'bold' : ''
             return (
               <tr>
                 <td>
-                  <span>{session.id}</span>
+                  <span class={idClass}>{session.id}</span>
                 </td>
                 <td>
-                  <span>{session.address}</span>
+                  <span class={addressClass}>{session.address}</span>
                 </td>
                 <td>
                   <button onClick={(event) => onClickDelete(event, session)}>
