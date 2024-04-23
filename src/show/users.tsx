@@ -77,10 +77,10 @@ export function ShowUsers({ client }: UsersViewProps) {
     <div class="section">
       <div class="menubar">
         <Link href="/create/user">Create User</Link>
-        {error && <p class="error">{error}</p>}
       </div>
       <UsersTable users={users} />
       <div class="menubar">
+        {error && <p class="error">{error}</p>}
       </div>
     </div>
   )

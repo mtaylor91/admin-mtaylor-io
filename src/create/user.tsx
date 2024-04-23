@@ -52,8 +52,8 @@ export function CreateUser({ client }: CreateUserProps) {
       <>
         <h1>User Created</h1>
         <p>Created user with ID: {newUserPrincipal.user.id}</p>
-        <label>Public Key<p>{btoa(newUserPrincipal.publicKeyBase64)}</p></label>
-        <label>Private Key<p>{btoa(newUserPrincipal.privateKeyBase64)}</p></label>
+        <label>Public Key<p>{newUserPrincipal.publicKeyBase64}</p></label>
+        <label>Private Key<p>{newUserPrincipal.privateKeyBase64}</p></label>
         <button onClick={onClickConfirmNewUser}>Confirm</button>
       </>
     )

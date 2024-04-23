@@ -76,10 +76,10 @@ export function ShowGroups({ client }: ShowGroupsProps) {
     <div class="section">
       <div class="menubar">
         <Link href="/create/group">Create Group</Link>
-        {error && <p class="error">{error}</p>}
       </div>
       <GroupsTable groups={groups} />
       <div class="menubar">
+        {error && <p class="error">{error}</p>}
       </div>
     </div>
   )
