@@ -90,7 +90,7 @@ export function ShowUsers(props: UsersViewProps) {
   const [error, setError] = useState<string | null>(null)
 
   const offset = Number(props.offset) || 0
-  const limit = Number(props.limit) || 100
+  const limit = Number(props.limit) || 10
 
   useEffect(() => {
     const getUsers = async () => {
