@@ -60,7 +60,7 @@ export function CreateUser({ client }: CreateUserProps) {
   }
 
   return (
-    <>
+    <div class="section">
       <div class="menubar">
         {error && <p class="error">{error}</p>}
       </div>
@@ -74,6 +74,6 @@ export function CreateUser({ client }: CreateUserProps) {
       </form>
       <div class="menubar">
       </div>
-    </>
+    </div>
   )
 }

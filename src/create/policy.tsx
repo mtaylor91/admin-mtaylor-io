@@ -158,7 +158,7 @@ export function CreatePolicy({ client }: CreatePolicyProps) {
   }
 
   return (
-    <>
+    <div class="section">
       <div class="menubar">
         {error && <p class="error">{error}</p>}
       </div>
@@ -177,6 +177,6 @@ export function CreatePolicy({ client }: CreatePolicyProps) {
       </form>
       <div class="menubar">
       </div>
-    </>
+    </div>
   )
 }

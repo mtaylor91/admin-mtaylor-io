@@ -59,7 +59,7 @@ export function CreateGroup({ client }: CreateGroupProps) {
   }
 
   return (
-    <>
+    <div class="section">
       <div class="menubar">
         {error && <p class="error">{error}</p>}
       </div>
@@ -68,6 +68,6 @@ export function CreateGroup({ client }: CreateGroupProps) {
         onInput={onInputNewGroupName}/>
       <div class="menubar">
       </div>
-    </>
+    </div>
   )
 }
