@@ -93,9 +93,7 @@ export function ShowUsers(props: UsersViewProps) {
     <div class="section">
       <div class="menubar">
         <Link href="/create/user">Create User</Link>
-        <input
-          type="text"
-          placeholder="Filter"
+        <input class="border-radius" type="text" placeholder="Search"
           onInput={e => setSearch((e.target as HTMLInputElement).value)} />
       </div>
       <UsersTable users={users} />

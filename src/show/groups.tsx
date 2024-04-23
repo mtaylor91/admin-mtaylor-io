@@ -1,7 +1,8 @@
 import axios, { AxiosError } from 'axios'
-import { Link } from 'preact-router'
+import { Link, route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { GroupIdentity } from 'iam-mtaylor-io-js'
+import { Pagination } from '../components/pagination'
 
 
 interface GroupsTableProps {
@@ -46,20 +47,33 @@ function GroupsTable({ groups }: GroupsTableProps) {
 interface ShowGroupsProps {
   client: IAM
   path?: string
+  offset?: number
+  limit?: number
 }
 
 
-export function ShowGroups({ client }: ShowGroupsProps) {
-  const [error, setError] = useState<string | null>(null)
+export function ShowGroups(props: ShowGroupsProps) {
+  const { client } = props
+  const [total, setTotal] = useState(0)
+  const [search, setSearch] = useState<string | null>(null)
   const [groups, setGroups] = useState<GroupIdentity[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  const offset = Number(props.offset) || 0
+  const limit = Number(props.limit) || 10
 
   useEffect(() => {
     const getGroups = async () => {
       try {
-        const response = await client.groups.listGroups()
+        const response = await client.groups.listGroups(search, offset, limit)
         const groups = response.items
-        setGroups(groups)
+        setTotal(response.total)
         setError(null)
+        setGroups(groups)
+        if (groups.length === 0 && offset > 0) {
+          const newOffset = Math.max(0, offset - limit)
+          route(`/groups?offset=${newOffset}&limit=${limit}`)
+        }
       } catch (err) {
         const error = err as Error | AxiosError
         if (!axios.isAxiosError(error))
@@ -70,14 +84,17 @@ export function ShowGroups({ client }: ShowGroupsProps) {
     }
 
     getGroups()
-  }, [])
+  }, [offset, limit, search])
 
   return (
     <div class="section">
       <div class="menubar">
         <Link href="/create/group">Create Group</Link>
+        <input class="border-radius" type="text" placeholder="Search"
+          onInput={e => setSearch((e.target as HTMLInputElement).value)} />
       </div>
       <GroupsTable groups={groups} />
+      <Pagination offset={offset} limit={limit} total={total} />
       <div class="menubar">
         {error && <p class="error">{error}</p>}
       </div>
