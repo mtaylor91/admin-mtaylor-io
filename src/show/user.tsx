@@ -32,16 +32,26 @@ function UserGroups({ client, user }: { client: IAM, user: User }) {
     <>
       <h3>Groups</h3>
       <table class="background-dark border-radius-top">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>UUID</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           {user.groups.map(group => {
-            const groupId = resolveGroupId(group)
-            const groupIdentifier = resolveGroupIdentifier(group)
             const onClickDelete = async () => {
               await client.groups.removeMember(groupId, user.id)
             }
             return (
               <tr>
-                <td><a href={`/groups/${groupId}`}>{groupIdentifier}</a></td>
+                <td>
+                  {group.name && <a href={`/groups/${group.name}`}>{group.name}</a>}
+                </td>
+                <td>
+                  <a href={`/groups/${group.id}`}>{group.id}</a>
+                </td>
                 <td><button onClick={onClickDelete}>Remove</button></td>
               </tr>
             )
@@ -58,16 +68,26 @@ function UserPolicies({ client, user }: { client: IAM, user: User }) {
     <>
       <h3>Policies</h3>
       <table class="background-dark border-radius-top">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>UUID</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           {user.policies.map(policy => {
-            const policyId = resolvePolicyId(policy)
-            const policyIdentifier = resolvePolicyIdentifier(policy)
             const onClickDelete = async () => {
               await client.users.detachPolicy(user.id, policyId)
             }
             return (
               <tr>
-                <td><a href={`/policies/${policyId}`}>{policyIdentifier}</a></td>
+                <td>
+                  {policy.name && <a href={`/policies/${policy.name}`}>{policy.name}</a>}
+                </td>
+                <td>
+                  <a href={`/policies/${policy.id}`}>{policy.id}</a>
+                </td>
                 <td><button onClick={onClickDelete}>Remove</button></td>
               </tr>
             )
@@ -83,6 +103,33 @@ interface UserSessionsProps {
   client: IAM
   user: User
   sessions: Session[]
+}
+
+
+function UserPublicKeys({ user }: { user: User }) {
+  return (
+    <>
+      <h3>Public Keys</h3>
+      <table class="background-dark border-radius">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Key</th>
+          </tr>
+        </thead>
+        <tbody>
+          {user.publicKeys.map(key => {
+            return (
+              <tr>
+                <td>{key.description}</td>
+                <td>{key.key}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </>
+  )
 }
 
 
@@ -314,6 +361,9 @@ export function ShowUser({ client, id }: UserViewProps) {
           onClick={() => setShowAddPolicy(true)}>
           Add Policy
         </button>
+      </div>
+      <div class="section">
+        <UserPublicKeys user={user} />
       </div>
       <div class="section">
         {sessionsError && <p class="error">{sessionsError}</p>}

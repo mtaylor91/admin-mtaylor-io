@@ -85,7 +85,6 @@ form label input {
 
 select {
   flex-grow: 1;
-  margin-left: 0.5em;
   text-align: right;
 }
 

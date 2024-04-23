@@ -76,7 +76,6 @@ function CreatePolicyStatementsView({
 
   return (
     <>
-      <h2>Statements</h2>
       <table>
         <thead>
           <tr>
