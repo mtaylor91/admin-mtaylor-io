@@ -88,6 +88,7 @@ export function ShowUsers(props: UsersViewProps) {
   const [total, setTotal] = useState(0)
   const [users, setUsers] = useState<UserIdentity[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [emailPrefix, setEmailPrefix] = useState<string | null>(null)
 
   const offset = Number(props.offset) || 0
   const limit = Number(props.limit) || 10
@@ -95,7 +96,7 @@ export function ShowUsers(props: UsersViewProps) {
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const response = await client.users.listUsers(offset, limit)
+        const response = await client.users.listUsers(emailPrefix, offset, limit)
         const users = response.items
         setTotal(response.total)
         setError(null)
@@ -110,12 +111,17 @@ export function ShowUsers(props: UsersViewProps) {
     }
 
     getUsers()
-  }, [offset, limit])
+  }, [offset, limit, emailPrefix])
 
   return (
     <div class="section">
       <div class="menubar">
         <Link href="/create/user">Create User</Link>
+        <input
+          type="text"
+          placeholder="Filter by email prefix"
+          onInput={e => setEmailPrefix((e.target as HTMLInputElement).value)}
+        />
       </div>
       <UsersTable users={users} />
       <Pagination offset={offset} limit={limit} total={total} />
