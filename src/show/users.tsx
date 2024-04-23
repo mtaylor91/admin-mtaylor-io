@@ -120,8 +120,7 @@ export function ShowUsers(props: UsersViewProps) {
         <input
           type="text"
           placeholder="Filter by email prefix"
-          onInput={e => setEmailPrefix((e.target as HTMLInputElement).value)}
-        />
+          onInput={e => setEmailPrefix((e.target as HTMLInputElement).value)} />
       </div>
       <UsersTable users={users} />
       <Pagination offset={offset} limit={limit} total={total} />
