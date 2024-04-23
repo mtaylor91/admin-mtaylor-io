@@ -34,7 +34,7 @@ export function ShowPolicies({ client }: ShowPoliciesProps) {
   }, [])
 
   return (
-    <>
+    <div class="section">
       <div class="menubar">
         <Link href="/create/policy">Create Policy</Link>
         {error && <p class="error">{error}</p>}
@@ -69,6 +69,6 @@ export function ShowPolicies({ client }: ShowPoliciesProps) {
       </table>
       <div class="menubar">
       </div>
-    </>
+    </div>
   )
 }

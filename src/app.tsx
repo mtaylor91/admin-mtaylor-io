@@ -7,7 +7,7 @@ import { CreateGroup } from './create/group'
 import { CreatePolicy } from './create/policy'
 import { CreateUser } from './create/user'
 import { Login } from './login'
-import { Menu } from './menu'
+import { HeaderMenu, SideMenu } from './menu'
 import { ShowUser } from './show/user'
 import { ShowGroups } from './show/groups'
 import { ShowPolicy } from './show/policy'
@@ -68,30 +68,33 @@ export function App() {
 
   if (client === null) {
     return (
-      <div class="container">
+      <>
         <Login login={login} email={email} secretKey={secretKey}
           setEmail={setEmail} setSecretKey={setSecretKey}/>
-      </div>
+      </>
     )
   } else {
     return (
-      <div class="container">
-        <Menu client={client} logout={logout} />
-        <main>
-          <Router>
-            <ShowUsers path="/" client={client}/>
-            <CreateGroup path="/create/group" client={client}/>
-            <CreatePolicy path="/create/policy" client={client}/>
-            <CreateUser path="/create/user" client={client}/>
-            <ShowUsers path="/users" client={client}/>
-            <ShowUser path="/users/:id" client={client} />
-            <ShowGroups path="/groups" client={client} />
-            <ShowGroup path="/groups/:id" client={client} />
-            <ShowPolicies path="/policies" client={client} />
-            <ShowPolicy path="/policies/:id" client={client} />
-          </Router>
-        </main>
-      </div>
+      <>
+        <HeaderMenu client={client} logout={logout} />
+        <div class="container">
+          <SideMenu />
+          <main class="content">
+            <Router>
+              <ShowUsers path="/" client={client}/>
+              <CreateGroup path="/create/group" client={client}/>
+              <CreatePolicy path="/create/policy" client={client}/>
+              <CreateUser path="/create/user" client={client}/>
+              <ShowUsers path="/users" client={client}/>
+              <ShowUser path="/users/:id" client={client} />
+              <ShowGroups path="/groups" client={client} />
+              <ShowGroup path="/groups/:id" client={client} />
+              <ShowPolicies path="/policies" client={client} />
+              <ShowPolicy path="/policies/:id" client={client} />
+            </Router>
+          </main>
+        </div>
+      </>
     )
   }
 }

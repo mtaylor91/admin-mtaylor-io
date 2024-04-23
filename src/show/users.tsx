@@ -74,7 +74,7 @@ export function ShowUsers({ client }: UsersViewProps) {
   }, [])
 
   return (
-    <>
+    <div class="section">
       <div class="menubar">
         <Link href="/create/user">Create User</Link>
         {error && <p class="error">{error}</p>}
@@ -82,6 +82,6 @@ export function ShowUsers({ client }: UsersViewProps) {
       <UsersTable users={users} />
       <div class="menubar">
       </div>
-    </>
+    </div>
   )
 }

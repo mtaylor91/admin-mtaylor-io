@@ -73,7 +73,7 @@ export function ShowGroups({ client }: ShowGroupsProps) {
   }, [])
 
   return (
-    <>
+    <div class="section">
       <div class="menubar">
         <Link href="/create/group">Create Group</Link>
         {error && <p class="error">{error}</p>}
@@ -81,6 +81,6 @@ export function ShowGroups({ client }: ShowGroupsProps) {
       <GroupsTable groups={groups} />
       <div class="menubar">
       </div>
-    </>
+    </div>
   )
 }
