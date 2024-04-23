@@ -66,8 +66,9 @@ export function CreateUser({ client }: CreateUserProps) {
       </div>
       <form onSubmit={onSubmitCreateUser}>
         <label>
-          Email
+          Email:
           <input type="email" value={createUserEmail}
+            placeholder="User email"
             onInput={onInputCreateUserEmail} />
         </label>
         <button type="submit">Create</button>

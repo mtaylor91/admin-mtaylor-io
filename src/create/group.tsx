@@ -15,8 +15,8 @@ function CreateGroupForm({ onSubmit, onInput }: CreateGroupFormProps) {
   return (
     <form onSubmit={onSubmit}>
       <label>
-        Name
-        <input type="text" onInput={onInput} />
+        Name:
+        <input type="text" placeholder="Group Name" onInput={onInput}/>
       </label>
       <button type="submit">Create</button>
     </form>

@@ -83,9 +83,24 @@ form label input {
   text-align: right;
 }
 
+input {
+  border: none;
+  color: inherit;
+  background-color: transparent;
+  text-align: right;
+}
+
 select {
   flex-grow: 1;
   text-align: right;
+  border: none;
+  color: inherit;
+  background-color: transparent;
+}
+
+option {
+  color: inherit;
+  background-color: black;
 }
 
 table {

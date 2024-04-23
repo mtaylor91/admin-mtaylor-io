@@ -46,6 +46,7 @@ function CreatePolicyStatementView({
       </td>
       <td>
         <input type="text" onInput={onInputResource}
+          placeholder="Resource"
           value={statement.resource} />
       </td>
       <td>
@@ -70,7 +71,7 @@ function CreatePolicyStatementsView({
     setStatements([...statements, {
       effect: "Allow" as Effect,
       action: "Read" as Action,
-      resource: "*"
+      resource: ""
     }])
   }
 
@@ -164,12 +165,12 @@ export function CreatePolicy({ client }: CreatePolicyProps) {
       </div>
       <form onSubmit={onSubmitCreatePolicy}>
         <label>
-          Name
-          <input type="text" onInput={onInputNewPolicyName} />
+          Name:
+          <input type="text" placeholder="Policy Name" onInput={onInputNewPolicyName} />
         </label>
         <label>
-          Hostname
-          <input type="text" onInput={onInputNewPolicyHostname} />
+          Hostname:
+          <input type="text" placeholder="Hostname" onInput={onInputNewPolicyHostname} />
         </label>
         <CreatePolicyStatementsView statements={newPolicyStatements}
           setStatements={setNewPolicyStatements} />
