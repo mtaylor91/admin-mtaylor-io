@@ -232,7 +232,7 @@ export function ShowGroup({ client, id }: ShowGroupProps) {
   }
 
   return (
-    <>
+    <div class="section">
       <div class="section">
         <h1>Group</h1>
         <p>{group.id}</p>
@@ -249,6 +249,6 @@ export function ShowGroup({ client, id }: ShowGroupProps) {
           onClick={onClickAddPolicy}>Add Policy</button>
       </div>
       <button onClick={onClickDelete}>Delete</button>
-    </>
+    </div>
   )
 }

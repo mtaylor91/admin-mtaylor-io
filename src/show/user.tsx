@@ -292,7 +292,7 @@ export function ShowUser({ client, id }: UserViewProps) {
   }
 
   return (
-    <>
+    <div class="section">
       <div class="section">
         <h1>User</h1>
         {error && <p class="error">{error}</p>}
@@ -318,6 +318,6 @@ export function ShowUser({ client, id }: UserViewProps) {
         <UserSessions client={client} user={user} sessions={sessions} />
       </div>
       <button onClick={onClickDelete}>Delete</button>
-    </>
+    </div>
   )
 }

@@ -79,7 +79,7 @@ export function ShowPolicy({ client, id }: ShowPolicyProps) {
   }
 
   return (
-    <>
+    <div class="section">
       <div class="section">
         <h1>Policy</h1>
         {error && <p class="error">{error}</p>}
@@ -100,6 +100,6 @@ export function ShowPolicy({ client, id }: ShowPolicyProps) {
         <PolicyStatements policy={policy} />
       </div>
       <button onClick={onClickDelete}>Delete</button>
-    </>
+    </div>
   )
 }
