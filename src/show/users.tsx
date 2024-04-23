@@ -1,39 +1,11 @@
 import axios, { AxiosError } from 'axios'
-import { Link } from 'preact-router'
+import { Link, route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
+
 import IAM, { UserIdentity } from 'iam-mtaylor-io-js'
+
 import { resolveUserId, resolveUserIdentifier } from '../util'
-
-
-interface PaginationProps {
-  offset: number,
-  limit: number,
-  total: number
-}
-
-
-function Pagination({ offset, limit, total }: PaginationProps) {
-  const page = Math.floor(offset / limit) + 1
-  const pages = Math.ceil(total / limit)
-  const prevOffset = offset - limit
-  const nextOffset = offset + limit
-
-  return (
-    <div class="pagination">
-      <span>
-        {offset > 0 &&
-          <Link href={`/users?offset=${prevOffset}&limit=${limit}`}>Previous</Link>
-        }
-      </span>
-      <span>Page {page} of {pages}</span>
-      <span>
-        {page < pages &&
-        <Link href={`/users?offset=${nextOffset}&limit=${limit}`}>Next</Link>
-        }
-      </span>
-    </div>
-  )
-}
+import { Pagination } from '../components/pagination'
 
 
 interface UsersTableProps {
@@ -101,6 +73,10 @@ export function ShowUsers(props: UsersViewProps) {
         setTotal(response.total)
         setError(null)
         setUsers(users)
+        if (users.length === 0 && offset > 0) {
+          const newOffset = Math.max(offset - limit, 0)
+          route(`/users?offset=${newOffset}&limit=${limit}`)
+        }
       } catch (err) {
         const error = err as Error | AxiosError
         if (!axios.isAxiosError(error))
