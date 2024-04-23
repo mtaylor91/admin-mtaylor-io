@@ -105,8 +105,8 @@ function UserSessions({ client, user, sessions }: UserSessionsProps) {
         </thead>
         <tbody>
           {sessions.map(session => {
-            const idClass = session.id === client.sessionId ? 'bold' : ''
-            const addressClass = session.address === client.sessionAddress ? 'bold' : ''
+            const idClass = session.id === client.sessionId ? 'active' : ''
+            const addressClass = session.address === client.sessionAddress ? 'active' : ''
             return (
               <tr>
                 <td>
