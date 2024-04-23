@@ -2,8 +2,8 @@ import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM, { User, Session, GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
-import { resolveGroupId, resolveGroupIdentifier } from '../util'
-import { resolvePolicyId, resolvePolicyIdentifier } from '../util'
+import { resolveGroupIdentifier } from '../util'
+import { resolvePolicyIdentifier } from '../util'
 
 
 interface UserViewProps {
@@ -42,7 +42,7 @@ function UserGroups({ client, user }: { client: IAM, user: User }) {
         <tbody>
           {user.groups.map(group => {
             const onClickDelete = async () => {
-              await client.groups.removeMember(groupId, user.id)
+              await client.groups.removeMember(group.id, user.id)
             }
             return (
               <tr>
@@ -78,7 +78,7 @@ function UserPolicies({ client, user }: { client: IAM, user: User }) {
         <tbody>
           {user.policies.map(policy => {
             const onClickDelete = async () => {
-              await client.users.detachPolicy(user.id, policyId)
+              await client.users.detachPolicy(user.id, policy.id)
             }
             return (
               <tr>
