@@ -49,13 +49,13 @@ interface ShowGroupsProps {
   path?: string
   offset?: number
   limit?: number
+  search?: string
 }
 
 
 export function ShowGroups(props: ShowGroupsProps) {
-  const { client } = props
+  const {client, search} = props
   const [total, setTotal] = useState(0)
-  const [search, setSearch] = useState<string | null>(null)
   const [groups, setGroups] = useState<GroupIdentity[]>([])
   const [error, setError] = useState<string | null>(null)
 
@@ -72,7 +72,10 @@ export function ShowGroups(props: ShowGroupsProps) {
         setGroups(groups)
         if (groups.length === 0 && offset > 0) {
           const newOffset = Math.max(0, offset - limit)
-          route(`/groups?offset=${newOffset}&limit=${limit}`)
+          if (search)
+            route(`/groups?offset=${newOffset}&limit=${limit}&search=${search}`)
+          else
+            route(`/groups?offset=${newOffset}&limit=${limit}`)
         }
       } catch (err) {
         const error = err as Error | AxiosError
@@ -86,12 +89,17 @@ export function ShowGroups(props: ShowGroupsProps) {
     getGroups()
   }, [offset, limit, search])
 
+  const onInputSearch = (e: Event) => {
+    const target = e.target as HTMLInputElement
+    route(`/groups?offset=0&limit=${limit}&search=${target.value}`)
+  }
+
   return (
     <div class="section">
       <div class="menubar">
         <Link href="/create/group">Create Group</Link>
-        <input class="border-radius" type="text" placeholder="Search"
-          onInput={e => setSearch((e.target as HTMLInputElement).value)} />
+        <input class="border-radius" type="text" value={search}
+          placeholder="Search" onInput={onInputSearch} />
       </div>
       <GroupsTable groups={groups} />
       <Pagination offset={offset} limit={limit} total={total} />

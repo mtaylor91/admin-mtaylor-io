@@ -51,19 +51,18 @@ interface UsersViewProps {
   client: IAM,
   path?: string,
   offset?: number,
-  limit?: number
+  limit?: number,
+  search?: string
 }
 
 
-export function ShowUsers(props: UsersViewProps) {
-  const { client } = props
+export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
   const [total, setTotal] = useState(0)
   const [users, setUsers] = useState<UserIdentity[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [search, setSearch] = useState<string | null>(null)
 
-  const offset = Number(props.offset) || 0
-  const limit = Number(props.limit) || 10
+  offset = Number(offset) || 0
+  limit = Number(limit) || 10
 
   useEffect(() => {
     const getUsers = async () => {
@@ -75,7 +74,10 @@ export function ShowUsers(props: UsersViewProps) {
         setUsers(users)
         if (users.length === 0 && offset > 0) {
           const newOffset = Math.max(offset - limit, 0)
-          route(`/users?offset=${newOffset}&limit=${limit}`)
+          if (search)
+            route(`/users?offset=${newOffset}&limit=${limit}&search=${search}`)
+          else
+            route(`/users?offset=${newOffset}&limit=${limit}`)
         }
       } catch (err) {
         const error = err as Error | AxiosError
@@ -89,12 +91,17 @@ export function ShowUsers(props: UsersViewProps) {
     getUsers()
   }, [offset, limit, search])
 
+  const onInputSearch = (e: Event) => {
+    const target = e.target as HTMLInputElement
+    route(`/users?offset=0&limit=${limit}&search=${target.value}`)
+  }
+
   return (
     <div class="section">
       <div class="menubar">
         <Link href="/create/user">Create User</Link>
-        <input class="border-radius" type="text" placeholder="Search"
-          onInput={e => setSearch((e.target as HTMLInputElement).value)} />
+        <input class="border-radius" type="text" value={search}
+          placeholder="Search" onInput={onInputSearch} />
       </div>
       <UsersTable users={users} />
       <Pagination offset={offset} limit={limit} total={total} />
