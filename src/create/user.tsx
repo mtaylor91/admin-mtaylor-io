@@ -11,6 +11,7 @@ interface CreateUserProps {
 
 
 export function CreateUser({ client }: CreateUserProps) {
+  const [createUserName, setCreateUserName] = useState('')
   const [createUserEmail, setCreateUserEmail] = useState('')
   const [newUserPrincipal, setNewUserPrincipal] = useState<Principal | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -25,14 +26,12 @@ export function CreateUser({ client }: CreateUserProps) {
   const onSubmitCreateUser = async (event: Event) => {
     event.preventDefault()
 
+    const name = createUserName === '' ? null : createUserName
+    const email = createUserEmail === '' ? null : createUserEmail
+
     try {
-      if (createUserEmail === '') {
-        const principal = await client.users.createUser()
-        setNewUserPrincipal(principal)
-      } else {
-        const principal = await client.users.createUser(createUserEmail)
-        setNewUserPrincipal(principal)
-      }
+      const principal = await client.users.createUser(name, email)
+      setNewUserPrincipal(principal)
     } catch (err) {
       const error = err as Error | AxiosError
       if (!axios.isAxiosError(error))
@@ -40,6 +39,11 @@ export function CreateUser({ client }: CreateUserProps) {
       setError(error.response?.data?.error || error.message)
       throw error
     }
+  }
+
+  const onInputCreateUserName = async (event: Event) => {
+    const target = event.target as HTMLInputElement
+    setCreateUserName(target.value)
   }
 
   const onInputCreateUserEmail = async (event: Event) => {
@@ -65,6 +69,12 @@ export function CreateUser({ client }: CreateUserProps) {
         {error && <p class="error">{error}</p>}
       </div>
       <form onSubmit={onSubmitCreateUser}>
+        <label>
+          Name:
+          <input type="text" value={createUserName}
+            placeholder="User name"
+            onInput={onInputCreateUserName} />
+        </label>
         <label>
           Email:
           <input type="email" value={createUserEmail}

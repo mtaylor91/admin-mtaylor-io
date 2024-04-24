@@ -13,6 +13,20 @@ interface UserViewProps {
 }
 
 
+function UserName({ user }: { user: User }) {
+  if (user.name) {
+    return (
+      <div class="section">
+        <h3>Name</h3>
+        <p class="background-dark border-radius">{user.name}</p>
+      </div>
+    )
+  }
+
+  return null
+}
+
+
 function UserEmail({ user }: { user: User }) {
   if (user.email) {
     return (
@@ -363,6 +377,7 @@ export function ShowUser({ client, id }: UserViewProps) {
         {error && <p class="error">{error}</p>}
         <p>{user.id}</p>
       </div>
+      <UserName user={user} />
       <UserEmail user={user} />
       <div class="section">
         <UserGroups client={client} user={user} />

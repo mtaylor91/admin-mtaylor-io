@@ -4,7 +4,6 @@ import { useState, useEffect } from 'preact/hooks'
 
 import IAM, { UserIdentity } from 'iam-mtaylor-io-js'
 
-import { resolveUserId, resolveUserIdentifier } from '../util'
 import { Pagination } from '../components/pagination'
 
 
@@ -19,6 +18,7 @@ function UsersTable({ users }: UsersTableProps) {
       <thead>
         <tr>
           <th><span>Email</span></th>
+          <th><span>Username</span></th>
           <th><span>UUID</span></th>
         </tr>
       </thead>
@@ -28,14 +28,21 @@ function UsersTable({ users }: UsersTableProps) {
             <tr>
               <td>
                 {user.email &&
-                <a href={`/users/${resolveUserIdentifier(user)}`}>
+                <a href={`/users/${user.email}`}>
                   {user.email}
                 </a>
                 }
               </td>
               <td>
-                <a href={`/users/${resolveUserId(user)}`}>
-                  {resolveUserId(user)}
+                {user.name &&
+                <a href={`/users/${user.name}`}>
+                  {user.name}
+                </a>
+                }
+              </td>
+              <td>
+                <a href={`/users/${user.id}`}>
+                  {user.id}
                 </a>
               </td>
             </tr>
