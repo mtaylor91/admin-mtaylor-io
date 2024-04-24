@@ -12,7 +12,7 @@ export function Pagination({ offset, limit, total }: PaginationProps) {
   const path = window.location.pathname
   const page = Math.floor(offset / limit) + 1
   const pages = Math.ceil(total / limit)
-  const prevOffset = offset - limit
+  const prevOffset = Math.max(offset - limit, 0)
   const nextOffset = offset + limit
 
   return (

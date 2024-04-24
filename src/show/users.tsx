@@ -62,7 +62,7 @@ export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
   const [error, setError] = useState<string | null>(null)
 
   offset = Number(offset) || 0
-  limit = Number(limit) || 10
+  limit = Number(limit) || 100
 
   useEffect(() => {
     const getUsers = async () => {

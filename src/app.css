@@ -78,7 +78,7 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 0 0 0 1em;
+  padding: 0 1em 0 1em;
 }
 
 .login {
@@ -107,26 +107,48 @@
 }
 
 .list-view {
-  min-height: 0;
-  flex-grow: 1;
+  width: 100%;
+  height: 100%;
   display: flex;
-  padding: 1em;
-  align-self: stretch;
+  margin: 0 1em 0 0;
   flex-direction: column;
-  overflow-y: auto;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .list-view table {
-  flex: 1 1 auto;
-  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex: 1 1 1px;
+  flex-direction: column;
+  overflow: auto;
+}
+.list-view table thead tr {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+.list-view table thead tr th {
+  flex-basis: 40em;
+}
+.list-view table tbody tr {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+.list-view table tbody tr td {
+  flex-basis: 40em;
 }
 
 .pagination {
-  margin: 1em 1em;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+.pagination span {
+  padding: 0.5em;
 }
 
 .background-dark {

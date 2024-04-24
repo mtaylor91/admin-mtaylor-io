@@ -60,7 +60,7 @@ export function ShowGroups(props: ShowGroupsProps) {
   const [error, setError] = useState<string | null>(null)
 
   const offset = Number(props.offset) || 0
-  const limit = Number(props.limit) || 10
+  const limit = Number(props.limit) || 100
 
   useEffect(() => {
     const getGroups = async () => {

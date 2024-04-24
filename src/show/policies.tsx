@@ -20,7 +20,7 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
   const [policies, setPolicies] = useState<PolicyIdentity[]>([])
 
   offset = Number(offset) || 0
-  limit = Number(limit) || 10
+  limit = Number(limit) || 100
 
   useEffect(() => {
     const getPolicies = async () => {
