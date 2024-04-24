@@ -28,35 +28,43 @@ function UserEmail({ user }: { user: User }) {
 
 
 function UserGroups({ client, user }: { client: IAM, user: User }) {
+  const thead = (
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>UUID</th>
+        <th></th>
+      </tr>
+    </thead>
+  )
+
+  const tbody = (
+    <tbody>
+      {user.groups.map(group => {
+        const onClickDelete = async () => {
+          await client.groups.removeMember(group.id, user.id)
+        }
+        return (
+          <tr>
+            <td>
+              {group.name && <a href={`/groups/${group.name}`}>{group.name}</a>}
+            </td>
+            <td>
+              <a href={`/groups/${group.id}`}>{group.id}</a>
+            </td>
+            <td><button onClick={onClickDelete}>Remove</button></td>
+          </tr>
+        )
+      })}
+    </tbody>
+  )
+
   return (
     <>
       <h3>Groups</h3>
       <table class="background-dark border-radius-top">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>UUID</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {user.groups.map(group => {
-            const onClickDelete = async () => {
-              await client.groups.removeMember(group.id, user.id)
-            }
-            return (
-              <tr>
-                <td>
-                  {group.name && <a href={`/groups/${group.name}`}>{group.name}</a>}
-                </td>
-                <td>
-                  <a href={`/groups/${group.id}`}>{group.id}</a>
-                </td>
-                <td><button onClick={onClickDelete}>Remove</button></td>
-              </tr>
-            )
-          })}
-        </tbody>
+        {user.groups.length > 0 && thead}
+        {tbody}
       </table>
     </>
   )
@@ -64,35 +72,43 @@ function UserGroups({ client, user }: { client: IAM, user: User }) {
 
 
 function UserPolicies({ client, user }: { client: IAM, user: User }) {
+  const thead = (
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>UUID</th>
+        <th></th>
+      </tr>
+    </thead>
+  )
+
+  const tbody = (
+    <tbody>
+      {user.policies.map(policy => {
+        const onClickDelete = async () => {
+          await client.users.detachPolicy(user.id, policy.id)
+        }
+        return (
+          <tr>
+            <td>
+              {policy.name && <a href={`/policies/${policy.name}`}>{policy.name}</a>}
+            </td>
+            <td>
+              <a href={`/policies/${policy.id}`}>{policy.id}</a>
+            </td>
+            <td><button onClick={onClickDelete}>Remove</button></td>
+          </tr>
+        )
+      })}
+    </tbody>
+  )
+
   return (
     <>
       <h3>Policies</h3>
       <table class="background-dark border-radius-top">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>UUID</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {user.policies.map(policy => {
-            const onClickDelete = async () => {
-              await client.users.detachPolicy(user.id, policy.id)
-            }
-            return (
-              <tr>
-                <td>
-                  {policy.name && <a href={`/policies/${policy.name}`}>{policy.name}</a>}
-                </td>
-                <td>
-                  <a href={`/policies/${policy.id}`}>{policy.id}</a>
-                </td>
-                <td><button onClick={onClickDelete}>Remove</button></td>
-              </tr>
-            )
-          })}
-        </tbody>
+        {user.policies.length > 0 && thead}
+        {tbody}
       </table>
     </>
   )
@@ -113,16 +129,16 @@ function UserPublicKeys({ user }: { user: User }) {
       <table class="background-dark border-radius">
         <thead>
           <tr>
-            <th>Description</th>
             <th>Key</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
           {user.publicKeys.map(key => {
             return (
               <tr>
-                <td>{key.description}</td>
                 <td>{key.key}</td>
+                <td>{key.description}</td>
               </tr>
             )
           })}
@@ -362,13 +378,17 @@ export function ShowUser({ client, id }: UserViewProps) {
           Add Policy
         </button>
       </div>
+      {user.publicKeys.length > 0 &&
       <div class="section">
         <UserPublicKeys user={user} />
       </div>
+      }
+      {sessions.length > 0 &&
       <div class="section">
         {sessionsError && <p class="error">{sessionsError}</p>}
         <UserSessions client={client} user={user} sessions={sessions} />
       </div>
+      }
       <button onClick={onClickDelete}>Delete</button>
     </div>
   )

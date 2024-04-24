@@ -28,25 +28,46 @@ function GroupName({ group }: { group: Group }) {
 
 
 function GroupUsers({ client, group }: { client: IAM, group: Group }) {
+  const thead = (
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>UUID</th>
+        <th></th>
+      </tr>
+    </thead>
+  )
+
+  const tbody = (
+    <tbody>
+      {group.users.map(user => {
+        const onClickDelete = async () => {
+          await client.groups.removeMember(group.id, userId)
+        }
+
+        return (
+          <tr>
+            <td>
+              {user.email &&
+              <a href={`/users/${user.email}`}>
+                {user.email}
+              </a>
+              }
+            </td>
+            <td><a href={`/users/${user.id}`}>{user.id}</a></td>
+            <td><button onClick={onClickDelete}>Remove</button></td>
+          </tr>
+        )
+      })}
+    </tbody>
+  )
+
   return (
     <>
       <h3>Users</h3>
       <table class="background-dark border-radius-top">
-        <tbody>
-          {group.users.map(user => {
-            const userId = resolveUserId(user)
-            const userIdentifier = resolveUserIdentifier(user)
-            const onClickDelete = async () => {
-              await client.groups.removeMember(group.id, userId)
-            }
-            return (
-              <tr>
-                <td><a href={`/users/${userId}`}>{userIdentifier}</a></td>
-                <td><button onClick={onClickDelete}>Remove</button></td>
-              </tr>
-            )
-          })}
-        </tbody>
+        {group.users.length > 0 && thead}
+        {tbody}
       </table>
     </>
   )
@@ -54,25 +75,47 @@ function GroupUsers({ client, group }: { client: IAM, group: Group }) {
 
 
 function GroupPolicies({ client, group }: { client: IAM, group: Group }) {
+
+  const thead = (
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>UUID</th>
+        <th></th>
+      </tr>
+    </thead>
+  )
+
+  const tbody = (
+    <tbody>
+      {group.policies.map(policy => {
+        const onClickDelete = async () => {
+          await client.groups.detachPolicy(group.id, policy.id)
+        }
+
+        return (
+          <tr>
+            <td>
+              {policy.name &&
+              <a href={`/policies/${policy.name}`}>
+                {policy.name}
+              </a>
+              }
+            </td>
+            <td><a href={`/policies/${policy.id}`}>{policy.id}</a></td>
+            <td><button onClick={onClickDelete}>Remove</button></td>
+          </tr>
+        )
+      })}
+    </tbody>
+  )
+
   return (
     <>
       <h3>Policies</h3>
       <table class="background-dark border-radius-top">
-        <tbody>
-          {group.policies.map(policy => {
-            const policyId = resolvePolicyId(policy)
-            const policyIdentifier = resolvePolicyIdentifier(policy)
-            const onClickDelete = async () => {
-              await client.groups.detachPolicy(group.id, policyId)
-            }
-            return (
-              <tr>
-                <td><a href={`/policies/${policyId}`}>{policyIdentifier}</a></td>
-                <td><button onClick={onClickDelete}>Remove</button></td>
-              </tr>
-            )
-          })}
-        </tbody>
+        {group.policies.length > 0 && thead}
+        {tbody}
       </table>
     </>
   )
