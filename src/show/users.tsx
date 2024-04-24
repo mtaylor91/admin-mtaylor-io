@@ -62,7 +62,7 @@ export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
   const [error, setError] = useState<string | null>(null)
 
   offset = Number(offset) || 0
-  limit = Number(limit) || 100
+  limit = Number(limit) || 50
 
   useEffect(() => {
     const getUsers = async () => {
@@ -100,14 +100,12 @@ export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
     <div class="list-view">
       <div class="menubar">
         <Link href="/create/user">Create User</Link>
+        {error && <p class="error">{error}</p>}
         <input class="border-radius" type="text" value={search}
           placeholder="Search" onInput={onInputSearch} />
       </div>
       <UsersTable users={users} />
       <Pagination offset={offset} limit={limit} total={total} />
-      <div class="menubar">
-        {error && <p class="error">{error}</p>}
-      </div>
     </div>
   )
 }

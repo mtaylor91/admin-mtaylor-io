@@ -60,7 +60,7 @@ export function ShowGroups(props: ShowGroupsProps) {
   const [error, setError] = useState<string | null>(null)
 
   const offset = Number(props.offset) || 0
-  const limit = Number(props.limit) || 100
+  const limit = Number(props.limit) || 50
 
   useEffect(() => {
     const getGroups = async () => {
@@ -98,14 +98,12 @@ export function ShowGroups(props: ShowGroupsProps) {
     <div class="list-view">
       <div class="menubar">
         <Link href="/create/group">Create Group</Link>
+        {error && <p class="error">{error}</p>}
         <input class="border-radius" type="text" value={search}
           placeholder="Search" onInput={onInputSearch} />
       </div>
       <GroupsTable groups={groups} />
       <Pagination offset={offset} limit={limit} total={total} />
-      <div class="menubar">
-        {error && <p class="error">{error}</p>}
-      </div>
     </div>
   )
 }

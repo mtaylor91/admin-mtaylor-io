@@ -20,7 +20,7 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
   const [policies, setPolicies] = useState<PolicyIdentity[]>([])
 
   offset = Number(offset) || 0
-  limit = Number(limit) || 100
+  limit = Number(limit) || 50
 
   useEffect(() => {
     const getPolicies = async () => {
@@ -58,6 +58,7 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
     <div class="list-view">
       <div class="menubar">
         <Link href="/create/policy">Create Policy</Link>
+        {error && <p class="error">{error}</p>}
         <input class="border-radius" type="text" value={search}
           placeholder="Search" onInput={onInputSearch} />
       </div>
@@ -90,9 +91,6 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
         </tbody>
       </table>
       <Pagination offset={offset} limit={limit} total={total} />
-      <div class="menubar">
-        {error && <p class="error">{error}</p>}
-      </div>
     </div>
   )
 }
