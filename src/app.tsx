@@ -77,22 +77,24 @@ export function App() {
     return (
       <>
         <HeaderMenu client={client} logout={logout} />
-        <div class="container">
-          <SideMenu />
-          <main class="content">
-            <Router>
-              <ShowUsers path="/" client={client}/>
-              <CreateGroup path="/create/group" client={client}/>
-              <CreatePolicy path="/create/policy" client={client}/>
-              <CreateUser path="/create/user" client={client}/>
-              <ShowUsers path="/users" client={client}/>
-              <ShowUser path="/users/:id" client={client} />
-              <ShowGroups path="/groups" client={client} />
-              <ShowGroup path="/groups/:id" client={client} />
-              <ShowPolicies path="/policies" client={client} />
-              <ShowPolicy path="/policies/:id" client={client} />
-            </Router>
-          </main>
+        <div class="wrapper">
+          <div class="container">
+            <SideMenu />
+            <main class="content">
+              <Router>
+                <ShowUsers path="/" client={client}/>
+                <CreateGroup path="/create/group" client={client}/>
+                <CreatePolicy path="/create/policy" client={client}/>
+                <CreateUser path="/create/user" client={client}/>
+                <ShowUsers path="/users" client={client}/>
+                <ShowUser path="/users/:id" client={client} />
+                <ShowGroups path="/groups" client={client} />
+                <ShowGroup path="/groups/:id" client={client} />
+                <ShowPolicies path="/policies" client={client} />
+                <ShowPolicy path="/policies/:id" client={client} />
+              </Router>
+            </main>
+          </div>
         </div>
       </>
     )
