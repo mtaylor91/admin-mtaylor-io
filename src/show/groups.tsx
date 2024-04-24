@@ -95,7 +95,7 @@ export function ShowGroups(props: ShowGroupsProps) {
   }
 
   return (
-    <div class="section">
+    <div class="list-view">
       <div class="menubar">
         <Link href="/create/group">Create Group</Link>
         <input class="border-radius" type="text" value={search}

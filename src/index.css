@@ -89,6 +89,10 @@ input {
   background-color: transparent;
   text-align: right;
 }
+input:focus {
+  outline: none;
+  border: 1px solid #646cff;
+}
 
 select {
   flex-grow: 1;

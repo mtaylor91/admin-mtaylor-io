@@ -55,7 +55,7 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
   }
 
   return (
-    <div class="section">
+    <div class="list-view">
       <div class="menubar">
         <Link href="/create/policy">Create Policy</Link>
         <input class="border-radius" type="text" value={search}

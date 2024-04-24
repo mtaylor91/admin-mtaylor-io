@@ -97,7 +97,7 @@ export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
   }
 
   return (
-    <div class="section">
+    <div class="list-view">
       <div class="menubar">
         <Link href="/create/user">Create User</Link>
         <input class="border-radius" type="text" value={search}
