@@ -7,87 +7,47 @@ import IAM, { UserIdentity, SortUsersBy, SortOrder } from 'iam-mtaylor-io-js'
 import { Pagination } from '../components/pagination'
 
 
-interface UsersTableProps {
-  users: UserIdentity[]
-}
-
-
-function UsersTable({ users }: UsersTableProps) {
-  return (
-    <table class="background-dark border-radius">
-      <thead>
-        <tr>
-          <th><span>Email</span></th>
-          <th><span>Username</span></th>
-          <th><span>UUID</span></th>
-        </tr>
-      </thead>
-      <tbody>
-        {users.map(user => {
-          return (
-            <tr>
-              <td>
-                {user.email &&
-                <a href={`/users/${user.email}`}>
-                  {user.email}
-                </a>
-                }
-              </td>
-              <td>
-                {user.name &&
-                <a href={`/users/${user.name}`}>
-                  {user.name}
-                </a>
-                }
-              </td>
-              <td>
-                <a href={`/users/${user.id}`}>
-                  {user.id}
-                </a>
-              </td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
-  )
-}
-
-
-interface UsersViewProps {
+interface ShowUsersProps {
   client: IAM,
   path?: string,
   offset?: number,
   limit?: number,
-  search?: string
+  search?: string,
+  sort?: string,
+  order?: string,
 }
 
 
-export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
+export function ShowUsers({
+  client, offset, limit, search, sort, order
+}: ShowUsersProps) {
   const [total, setTotal] = useState(0)
   const [users, setUsers] = useState<UserIdentity[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  const sort = "name" as SortUsersBy
-  const order = "asc" as SortOrder
-
+  sort = sort || "name"
+  order = order || "asc"
   offset = Number(offset) || 0
   limit = Number(limit) || 50
 
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const response = await client.users.listUsers(search, sort, order, offset, limit)
+        const response = await client.users.listUsers(
+          search, sort as SortUsersBy, order as SortOrder, offset, limit)
         const users = response.items
         setTotal(response.total)
         setError(null)
         setUsers(users)
         if (users.length === 0 && offset > 0) {
           const newOffset = Math.max(offset - limit, 0)
-          if (search)
-            route(`/users?offset=${newOffset}&limit=${limit}&search=${search}`)
-          else
-            route(`/users?offset=${newOffset}&limit=${limit}`)
+          const params = new URLSearchParams()
+          params.append('offset', newOffset.toString())
+          params.append('limit', limit.toString())
+          params.append('sort', sort)
+          params.append('order', order)
+          if (search) params.append('search', search)
+          route(`/users?${params.toString()}`)
         }
       } catch (err) {
         const error = err as Error | AxiosError
@@ -99,11 +59,59 @@ export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
     }
 
     getUsers()
-  }, [offset, limit, search])
+  }, [offset, limit, search, sort, order])
 
   const onInputSearch = (e: Event) => {
     const target = e.target as HTMLInputElement
-    route(`/users?offset=0&limit=${limit}&search=${target.value}`)
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', sort)
+    params.append('order', order)
+    params.append('search', target.value)
+    route(`/users?${params.toString()}`)
+  }
+
+  const onClickSortByEmail = () => {
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', 'email')
+    if (sort === 'email' && order === 'asc') {
+      params.append('order', "desc")
+    } else {
+      params.append('order', "asc")
+    }
+    if (search) params.append('search', search)
+    route(`/users?${params.toString()}`)
+  }
+
+  const onClickSortByUsername = () => {
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', 'name')
+    if (sort === 'name' && order === 'asc') {
+      params.append('order', "desc")
+    } else {
+      params.append('order', "asc")
+    }
+    if (search) params.append('search', search)
+    route(`/users?${params.toString()}`)
+  }
+
+  const onClickSortByUUID = () => {
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', 'id')
+    if (sort === 'id' && order === 'asc') {
+      params.append('order', "desc")
+    } else {
+      params.append('order', "asc")
+    }
+    if (search) params.append('search', search)
+    route(`/users?${params.toString()}`)
   }
 
   return (
@@ -114,7 +122,42 @@ export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
         <input class="border-radius" type="text" value={search}
           placeholder="Search" onInput={onInputSearch} />
       </div>
-      <UsersTable users={users} />
+      <table class="background-dark border-radius">
+        <thead>
+          <tr>
+            <th><span onClick={onClickSortByEmail}>Email</span></th>
+            <th><span onClick={onClickSortByUsername}>Username</span></th>
+            <th><span onClick={onClickSortByUUID}>UUID</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map(user => {
+            return (
+              <tr>
+                <td>
+                  {user.email &&
+                  <a href={`/users/${user.email}`}>
+                    {user.email}
+                  </a>
+                  }
+                </td>
+                <td>
+                  {user.name &&
+                  <a href={`/users/${user.name}`}>
+                    {user.name}
+                  </a>
+                  }
+                </td>
+                <td>
+                  <a href={`/users/${user.id}`}>
+                    {user.id}
+                  </a>
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
       <Pagination offset={offset} limit={limit} total={total} />
     </div>
   )
