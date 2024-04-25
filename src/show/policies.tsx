@@ -63,7 +63,7 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
       <div class="menubar">
         <Link href="/create/policy">Create Policy</Link>
         {error && <p class="error">{error}</p>}
-        <input class="border-radius" type="text" value={search}
+        <input class="search" type="text" value={search}
           placeholder="Search" onInput={onInputSearch} />
       </div>
       <table class="background-dark border-radius">

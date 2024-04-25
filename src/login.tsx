@@ -2,16 +2,16 @@
 
 interface LoginProps {
   login: () => void
-  email: string
+  id: string
   secretKey: string
-  setEmail: (email: string) => void
+  setId: (id: string) => void
   setSecretKey: (secretKey: string) => void
 }
 
 
-export function Login({login, email, secretKey, setEmail, setSecretKey}: LoginProps) {
-  const onInputEmail = (e: Event) => {
-    setEmail((e.target as HTMLInputElement).value)
+export function Login({login, id, secretKey, setId, setSecretKey}: LoginProps) {
+  const onInputId = (e: Event) => {
+    setId((e.target as HTMLInputElement).value)
   }
 
   const onInputSecretKey = (e: Event) => {
@@ -21,8 +21,8 @@ export function Login({login, email, secretKey, setEmail, setSecretKey}: LoginPr
   return (
     <form class="login" onSubmit={e => { e.preventDefault(); login() }}>
       <h1>Login</h1>
-      <input id="email" type="text" placeholder="Email"
-        value={email} onInput={onInputEmail} />
+      <input id="id" type="text" placeholder="ID"
+        value={id} onInput={onInputId} />
       <input id="password" type="password" placeholder="Secret Key"
         value={secretKey} onInput={onInputSecretKey} />
       <button type="submit" value="Login">Login</button>

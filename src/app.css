@@ -73,6 +73,10 @@
   text-decoration: none;
 }
 
+.menubar .search {
+  margin: 1em;
+}
+
 .menubar-user {
   padding: 1em;
 }

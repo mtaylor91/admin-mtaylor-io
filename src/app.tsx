@@ -18,19 +18,19 @@ import './app.css'
 
 
 export function App() {
-  const [email, setEmail] = useState<string>('')
+  const [id, setId] = useState<string>('')
   const [secretKey, setSecretKey] = useState<string>('')
   const [client, setClient] = useState<IAM | null>(null)
 
   const login = async () => {
     const iam = new IAM()
-    await iam.login(email, secretKey)
+    await iam.login(id, secretKey)
 
     if (iam.sessionId === null || iam.sessionToken === null) {
       throw new Error('Failed to login')
     }
 
-    localStorage.setItem('MTAYLOR_IO_EMAIL', email)
+    localStorage.setItem('MTAYLOR_IO_ID', id)
     localStorage.setItem('MTAYLOR_IO_SECRET_KEY', secretKey)
     localStorage.setItem('MTAYLOR_IO_SESSION_ID', iam.sessionId)
     localStorage.setItem('MTAYLOR_IO_SESSION_TOKEN', iam.sessionToken)
@@ -43,7 +43,7 @@ export function App() {
     }
 
     await client.logout()
-    localStorage.removeItem('MTAYLOR_IO_EMAIL')
+    localStorage.removeItem('MTAYLOR_IO_ID')
     localStorage.removeItem('MTAYLOR_IO_SECRET_KEY')
     localStorage.removeItem('MTAYLOR_IO_SESSION_ID')
     localStorage.removeItem('MTAYLOR_IO_SESSION_TOKEN')
@@ -52,13 +52,13 @@ export function App() {
 
   useEffect(() => {
     const tryReloadSession = async () => {
-      const email = localStorage.getItem('MTAYLOR_IO_EMAIL')
+      const id = localStorage.getItem('MTAYLOR_IO_ID')
       const secretKey = localStorage.getItem('MTAYLOR_IO_SECRET_KEY')
       const sessionId = localStorage.getItem('MTAYLOR_IO_SESSION_ID')
       const sessionToken = localStorage.getItem('MTAYLOR_IO_SESSION_TOKEN')
-      if (email && secretKey && sessionId && sessionToken) {
+      if (id && secretKey && sessionId && sessionToken) {
         const iam = new IAM()
-        await iam.refresh(email, secretKey, sessionId, sessionToken)
+        await iam.refresh(id, secretKey, sessionId, sessionToken)
         setClient(iam)
       }
     }
@@ -69,8 +69,8 @@ export function App() {
   if (client === null) {
     return (
       <>
-        <Login login={login} email={email} secretKey={secretKey}
-          setEmail={setEmail} setSecretKey={setSecretKey}/>
+        <Login login={login} id={id} secretKey={secretKey}
+          setId={setId} setSecretKey={setSecretKey}/>
       </>
     )
   } else {

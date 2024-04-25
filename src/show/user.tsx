@@ -366,8 +366,16 @@ export function ShowUser({ client, id }: UserViewProps) {
 
   const onClickDelete = async (event: Event) => {
     event.preventDefault()
-    await client.users.deleteUser(user.id)
-    route('/users')
+    try {
+      await client.users.deleteUser(user.id)
+      route('/users')
+    } catch (err) {
+      const error = err as Error | AxiosError
+      if (!axios.isAxiosError(error))
+        throw error
+      setError(error.response?.data?.error || error.message)
+      throw error
+    }
   }
 
   return (

@@ -119,7 +119,7 @@ export function ShowUsers({
       <div class="menubar">
         <Link href="/create/user">Create User</Link>
         {error && <p class="error">{error}</p>}
-        <input class="border-radius" type="text" value={search}
+        <input class="search" type="text" value={search}
           placeholder="Search" onInput={onInputSearch} />
       </div>
       <table class="background-dark border-radius">

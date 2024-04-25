@@ -103,7 +103,7 @@ export function ShowGroups(props: ShowGroupsProps) {
       <div class="menubar">
         <Link href="/create/group">Create Group</Link>
         {error && <p class="error">{error}</p>}
-        <input class="border-radius" type="text" value={search}
+        <input class="search" type="text" value={search}
           placeholder="Search" onInput={onInputSearch} />
       </div>
       <GroupsTable groups={groups} />
