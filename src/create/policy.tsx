@@ -78,6 +78,7 @@ function CreatePolicyStatementsView({
   return (
     <>
       <table>
+        {statements.length > 0 && (
         <thead>
           <tr>
             <th>Action</th>
@@ -86,6 +87,7 @@ function CreatePolicyStatementsView({
             <th></th>
           </tr>
         </thead>
+        )}
         <tbody>
           {statements.map((statement, index) => {
             const setStatement = (statement: Rule) => {
@@ -160,9 +162,7 @@ export function CreatePolicy({ client }: CreatePolicyProps) {
 
   return (
     <div class="section">
-      <div class="menubar">
-        {error && <p class="error">{error}</p>}
-      </div>
+      {error && <p class="error">{error}</p>}
       <form onSubmit={onSubmitCreatePolicy}>
         <label>
           Name:
@@ -176,8 +176,6 @@ export function CreatePolicy({ client }: CreatePolicyProps) {
           setStatements={setNewPolicyStatements} />
         <button type="submit">Create</button>
       </form>
-      <div class="menubar">
-      </div>
     </div>
   )
 }

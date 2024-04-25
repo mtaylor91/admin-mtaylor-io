@@ -69,9 +69,7 @@ export function CreateUser({ client }: CreateUserProps) {
 
   return (
     <div class="section">
-      <div class="menubar">
-        {error && <p class="error">{error}</p>}
-      </div>
+      {error && <p class="error">{error}</p>}
       <form onSubmit={onSubmitCreateUser}>
         <label>
           Name:
@@ -87,8 +85,6 @@ export function CreateUser({ client }: CreateUserProps) {
         </label>
         <button type="submit">Create</button>
       </form>
-      <div class="menubar">
-      </div>
     </div>
   )
 }
