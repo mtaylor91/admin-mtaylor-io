@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios'
 import { Link, route } from 'preact-router'
 import { useState, useEffect } from 'preact/hooks'
 
-import IAM, { UserIdentity } from 'iam-mtaylor-io-js'
+import IAM, { UserIdentity, SortUsersBy, SortOrder } from 'iam-mtaylor-io-js'
 
 import { Pagination } from '../components/pagination'
 
@@ -68,13 +68,16 @@ export function ShowUsers({ client, offset, limit, search }: UsersViewProps) {
   const [users, setUsers] = useState<UserIdentity[]>([])
   const [error, setError] = useState<string | null>(null)
 
+  const sort = "name" as SortUsersBy
+  const order = "asc" as SortOrder
+
   offset = Number(offset) || 0
   limit = Number(limit) || 50
 
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const response = await client.users.listUsers(search, offset, limit)
+        const response = await client.users.listUsers(search, sort, order, offset, limit)
         const users = response.items
         setTotal(response.total)
         setError(null)

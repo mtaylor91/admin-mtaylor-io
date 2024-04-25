@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { Link, route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
-import IAM, { GroupIdentity } from 'iam-mtaylor-io-js'
+import IAM, { GroupIdentity, SortGroupsBy, SortOrder } from 'iam-mtaylor-io-js'
 import { Pagination } from '../components/pagination'
 
 
@@ -59,13 +59,17 @@ export function ShowGroups(props: ShowGroupsProps) {
   const [groups, setGroups] = useState<GroupIdentity[]>([])
   const [error, setError] = useState<string | null>(null)
 
+  const sort = "name" as SortGroupsBy
+  const order = "asc" as SortOrder
   const offset = Number(props.offset) || 0
   const limit = Number(props.limit) || 50
 
   useEffect(() => {
     const getGroups = async () => {
       try {
-        const response = await client.groups.listGroups(search, offset, limit)
+        const response = await
+          client.groups.listGroups(search, sort, order, offset, limit)
+
         const groups = response.items
         setTotal(response.total)
         setError(null)

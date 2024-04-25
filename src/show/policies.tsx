@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { Link, route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
-import IAM, { PolicyIdentity } from 'iam-mtaylor-io-js'
+import IAM, { PolicyIdentity, SortPoliciesBy, SortOrder } from 'iam-mtaylor-io-js'
 import { Pagination } from '../components/pagination'
 
 
@@ -19,13 +19,17 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
   const [total, setTotal] = useState(0)
   const [policies, setPolicies] = useState<PolicyIdentity[]>([])
 
+  const sort = "name" as SortPoliciesBy
+  const order = "asc" as SortOrder
+
   offset = Number(offset) || 0
   limit = Number(limit) || 50
 
   useEffect(() => {
     const getPolicies = async () => {
       try {
-        const response = await client.policies.listPolicies(search, offset, limit)
+        const response = await
+          client.policies.listPolicies(search, sort, order, offset, limit)
         const policies = response.items
         setTotal(response.total)
         setPolicies(policies)

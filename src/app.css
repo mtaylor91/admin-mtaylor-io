@@ -43,6 +43,10 @@
   background-color: #1a1a1a;
 }
 
+.error {
+  color: #FF0000;
+}
+
 .section {
   display: flex;
   flex-direction: column;
