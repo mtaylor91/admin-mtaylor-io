@@ -36,7 +36,11 @@ export function CreateUser({ client }: CreateUserProps) {
       const error = err as Error | AxiosError
       if (!axios.isAxiosError(error))
         throw error
-      setError(error.response?.data?.error || error.message)
+
+      const errorMessage = error.response?.data?.error || error.message
+      const errorDetails = error.response?.data?.message || null
+
+      setError(`${errorMessage}${errorDetails ? `: ${errorDetails}` : ''}`)
       throw error
     }
   }
