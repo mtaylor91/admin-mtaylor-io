@@ -5,51 +5,14 @@ import IAM, { GroupIdentity, SortGroupsBy, SortOrder } from 'iam-mtaylor-io-js'
 import { Pagination } from '../components/pagination'
 
 
-interface GroupsTableProps {
-  groups: GroupIdentity[]
-}
-
-
-function GroupsTable({ groups }: GroupsTableProps) {
-  return (
-    <table class="background-dark border-radius">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>UUID</th>
-        </tr>
-      </thead>
-      <tbody>
-        {groups.map(group => {
-          return (
-            <tr>
-              <td>
-                {group.name &&
-                <a href={`/groups/${group.name}`}>
-                  {group.name}
-                </a>
-                }
-              </td>
-              <td>
-                <a href={`/groups/${group.id}`}>
-                  {group.id}
-                </a>
-              </td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
-  )
-}
-
-
 interface ShowGroupsProps {
   client: IAM
   path?: string
   offset?: number
   limit?: number
   search?: string
+  sort?: string
+  order?: string
 }
 
 
@@ -59,8 +22,8 @@ export function ShowGroups(props: ShowGroupsProps) {
   const [groups, setGroups] = useState<GroupIdentity[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  const sort = "name" as SortGroupsBy
-  const order = "asc" as SortOrder
+  const sort = (props.sort || "name") as SortGroupsBy
+  const order = (props.order || "asc") as SortOrder
   const offset = Number(props.offset) || 0
   const limit = Number(props.limit) || 50
 
@@ -76,10 +39,13 @@ export function ShowGroups(props: ShowGroupsProps) {
         setGroups(groups)
         if (groups.length === 0 && offset > 0) {
           const newOffset = Math.max(0, offset - limit)
-          if (search)
-            route(`/groups?offset=${newOffset}&limit=${limit}&search=${search}`)
-          else
-            route(`/groups?offset=${newOffset}&limit=${limit}`)
+          const params = new URLSearchParams()
+          params.append('offset', newOffset.toString())
+          params.append('limit', limit.toString())
+          params.append('sort', sort)
+          params.append('order', order)
+          if (search) params.append('search', search)
+          route(`/groups?${params.toString()}`)
         }
       } catch (err) {
         const error = err as Error | AxiosError
@@ -91,11 +57,45 @@ export function ShowGroups(props: ShowGroupsProps) {
     }
 
     getGroups()
-  }, [offset, limit, search])
+  }, [offset, limit, search, sort, order])
 
   const onInputSearch = (e: Event) => {
     const target = e.target as HTMLInputElement
-    route(`/groups?offset=0&limit=${limit}&search=${target.value}`)
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', sort)
+    params.append('order', order)
+    params.append('search', target.value)
+    route(`/groups?${params.toString()}`)
+  }
+
+  const onClickSortByName = () => {
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', 'name')
+    if (sort === 'name' && order === 'asc') {
+      params.append('order', 'desc')
+    } else {
+      params.append('order', 'asc')
+    }
+    if (search) params.append('search', search)
+    route(`/groups?${params.toString()}`)
+  }
+
+  const onClickSortByUUID = () => {
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', 'id')
+    if (sort === 'id' && order === 'asc') {
+      params.append('order', 'desc')
+    } else {
+      params.append('order', 'asc')
+    }
+    if (search) params.append('search', search)
+    route(`/groups?${params.toString()}`)
   }
 
   return (
@@ -106,7 +106,34 @@ export function ShowGroups(props: ShowGroupsProps) {
         <input class="search" type="text" value={search}
           placeholder="Search" onInput={onInputSearch} />
       </div>
-      <GroupsTable groups={groups} />
+      <table class="background-dark border-radius">
+        <thead>
+          <tr>
+            <th><span onClick={onClickSortByName}>Name</span></th>
+            <th><span onClick={onClickSortByUUID}>UUID</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {groups.map(group => {
+            return (
+              <tr>
+                <td>
+                  {group.name &&
+                  <a href={`/groups/${group.name}`}>
+                    {group.name}
+                  </a>
+                  }
+                </td>
+                <td>
+                  <a href={`/groups/${group.id}`}>
+                    {group.id}
+                  </a>
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
       <Pagination offset={offset} limit={limit} total={total} />
     </div>
   )
