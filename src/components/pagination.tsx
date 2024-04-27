@@ -19,7 +19,7 @@ export function Pagination({ offset, limit, total }: PaginationProps) {
     <div class="pagination">
       <span>
         {offset > 0 &&
-          <Link href={`${path}?offset=${prevOffset}&limit=${limit}`}>Previous</Link>
+        <Link href={`${path}?offset=${prevOffset}&limit=${limit}`}>Previous</Link>
         }
       </span>
       <span>Page {page} of {pages}</span>
