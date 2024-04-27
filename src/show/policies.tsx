@@ -11,16 +11,20 @@ interface ShowPoliciesProps {
   offset?: number
   limit?: number
   search?: string
+  sort?: string
+  order?: string
 }
 
 
-export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProps) {
+export function ShowPolicies({
+  client, offset, limit, search, sort, order
+}: ShowPoliciesProps) {
   const [error, setError] = useState<string | null>(null)
   const [total, setTotal] = useState(0)
   const [policies, setPolicies] = useState<PolicyIdentity[]>([])
 
-  const sort = "name" as SortPoliciesBy
-  const order = "asc" as SortOrder
+  sort = sort || "name"
+  order = order || "asc"
 
   offset = Number(offset) || 0
   limit = Number(limit) || 50
@@ -28,18 +32,21 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
   useEffect(() => {
     const getPolicies = async () => {
       try {
-        const response = await
-          client.policies.listPolicies(search, sort, order, offset, limit)
+        const response = await client.policies.listPolicies(
+          search, sort as SortPoliciesBy, order as SortOrder, offset, limit)
         const policies = response.items
         setTotal(response.total)
         setPolicies(policies)
         setError(null)
         if (policies.length === 0 && offset > 0) {
           const newOffset = Math.max(offset - limit, 0)
-          if (search)
-            route(`/policies?offset=${newOffset}&limit=${limit}&search=${search}`)
-          else
-            route(`/policies?offset=${newOffset}&limit=${limit}`)
+          const params = new URLSearchParams()
+          params.append('offset', newOffset.toString())
+          params.append('limit', limit.toString())
+          params.append('sort', sort)
+          params.append('order', order)
+          if (search) params.append('search', search)
+          route(`/policies?${params.toString()}`)
         }
       } catch (err) {
         const error = err as Error | AxiosError
@@ -51,11 +58,45 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
     }
 
     getPolicies()
-  }, [offset, limit, search])
+  }, [offset, limit, search, sort, order])
 
   const onInputSearch = (e: Event) => {
     const target = e.target as HTMLInputElement
-    route(`/policies?offset=0&limit=${limit}&search=${target.value}`)
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', sort)
+    params.append('order', order)
+    params.append('search', target.value)
+    route(`/policies?${params.toString()}`)
+  }
+
+  const onClickSortByName = () => {
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', 'name')
+    if (sort === 'name' && order === 'asc') {
+      params.append('order', 'desc')
+    } else {
+      params.append('order', 'asc')
+    }
+    if (search) params.append('search', search)
+    route(`/policies?${params.toString()}`)
+  }
+
+  const onClickSortByUUID = () => {
+    const params = new URLSearchParams()
+    params.append('offset', '0')
+    params.append('limit', limit.toString())
+    params.append('sort', 'id')
+    if (sort === 'id' && order === 'asc') {
+      params.append('order', 'desc')
+    } else {
+      params.append('order', 'asc')
+    }
+    if (search) params.append('search', search)
+    route(`/policies?${params.toString()}`)
   }
 
   return (
@@ -69,8 +110,8 @@ export function ShowPolicies({ client, offset, limit, search }: ShowPoliciesProp
       <table class="background-dark border-radius">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>UUID</th>
+            <th><span onClick={onClickSortByName}>Name</span></th>
+            <th><span onClick={onClickSortByUUID}>UUID</span></th>
           </tr>
         </thead>
         <tbody>
