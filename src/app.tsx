@@ -17,37 +17,40 @@ import { ShowGroup } from './show/group'
 import './app.css'
 
 
+const client = new IAM()
+
+
 export function App() {
   const [id, setId] = useState<string>('')
   const [secretKey, setSecretKey] = useState<string>('')
-  const [client, setClient] = useState<IAM | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(null)
 
   const login = async () => {
-    const iam = new IAM()
-    await iam.login(id, secretKey)
+    await client.login(id, secretKey)
 
-    if (iam.sessionId === null || iam.sessionToken === null) {
-      throw new Error('Failed to login')
+    if (client.sessionId === null || client.sessionToken === null) {
+      return
     }
 
     localStorage.setItem('MTAYLOR_IO_ID', id)
     localStorage.setItem('MTAYLOR_IO_SECRET_KEY', secretKey)
-    localStorage.setItem('MTAYLOR_IO_SESSION_ID', iam.sessionId)
-    localStorage.setItem('MTAYLOR_IO_SESSION_TOKEN', iam.sessionToken)
-    setClient(iam)
+    localStorage.setItem('MTAYLOR_IO_SESSION_ID', client.sessionId)
+    localStorage.setItem('MTAYLOR_IO_SESSION_TOKEN', client.sessionToken)
+
+    setSessionId(client.sessionId)
+    setId('')
+    setSecretKey('')
   }
 
   const logout = async () => {
-    if (client === null) {
-      return
-    }
-
     await client.logout()
+
     localStorage.removeItem('MTAYLOR_IO_ID')
     localStorage.removeItem('MTAYLOR_IO_SECRET_KEY')
     localStorage.removeItem('MTAYLOR_IO_SESSION_ID')
     localStorage.removeItem('MTAYLOR_IO_SESSION_TOKEN')
-    setClient(null)
+
+    setSessionId(null)
   }
 
   useEffect(() => {
@@ -57,16 +60,15 @@ export function App() {
       const sessionId = localStorage.getItem('MTAYLOR_IO_SESSION_ID')
       const sessionToken = localStorage.getItem('MTAYLOR_IO_SESSION_TOKEN')
       if (id && secretKey && sessionId && sessionToken) {
-        const iam = new IAM()
-        await iam.refresh(id, secretKey, sessionId, sessionToken)
-        setClient(iam)
+        await client.refresh(id, secretKey, sessionId, sessionToken)
+        setSessionId(client.sessionId)
       }
     }
 
     tryReloadSession()
   }, [])
 
-  if (client === null) {
+  if (sessionId === null) {
     return (
       <>
         <Login login={login} id={id} secretKey={secretKey}
