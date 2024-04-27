@@ -1,7 +1,9 @@
 import axios, { AxiosError } from 'axios'
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
-import IAM, { User, Session, GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
+import IAM from 'iam-mtaylor-io-js'
+import { LoginResponse, User, Session } from 'iam-mtaylor-io-js'
+import { GroupIdentity, PolicyIdentity } from 'iam-mtaylor-io-js'
 import { resolveGroupIdentifier } from '../util'
 import { resolvePolicyIdentifier } from '../util'
 
@@ -129,13 +131,6 @@ function UserPolicies({ client, user }: { client: IAM, user: User }) {
 }
 
 
-interface UserSessionsProps {
-  client: IAM
-  user: User
-  sessions: Session[]
-}
-
-
 function UserPublicKeys({ user }: { user: User }) {
   return (
     <>
@@ -160,6 +155,92 @@ function UserPublicKeys({ user }: { user: User }) {
       </table>
     </>
   )
+}
+
+
+interface UserLoginsProps {
+  client: IAM
+  user: User
+  logins: LoginResponse[]
+}
+
+
+function UserLogins({ client, user, logins }: UserLoginsProps) {
+  const onClickDeny = async (event: Event, login: LoginResponse) => {
+    event.preventDefault()
+    await client.logins.denyLogin(login.id, user.id)
+  }
+
+  const onClickGrant = async (event: Event, login: LoginResponse) => {
+    event.preventDefault()
+    await client.logins.grantLogin(login.id, user.id)
+  }
+
+  const onClickDelete = async (event: Event, login: LoginResponse) => {
+    event.preventDefault()
+    await client.logins.deleteLogin(login.id, user.id)
+  }
+
+  return (
+    <>
+      <h3>Logins</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Address</th>
+            <th>UUID</th>
+            <th>Session</th>
+            <th>Status</th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {logins.map(login => {
+            return (
+              <tr>
+                <td>
+                  <span>{login.ip}</span>
+                </td>
+                <td>
+                  <span>{login.id}</span>
+                </td>
+                <td>
+                  <span>{login.session}</span>
+                </td>
+                <td>
+                  <span>{login.status}</span>
+                </td>
+                <td>
+                  <button onClick={(event) => onClickGrant(event, login)}>
+                    Grant
+                  </button>
+                </td>
+                <td>
+                  <button onClick={(event) => onClickDeny(event, login)}>
+                    Deny
+                  </button>
+                </td>
+                <td>
+                  <button onClick={(event) => onClickDelete(event, login)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </>
+  )
+}
+
+
+interface UserSessionsProps {
+  client: IAM
+  user: User
+  sessions: Session[]
 }
 
 
@@ -314,6 +395,8 @@ function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
 export function ShowUser({ client, id }: UserViewProps) {
   const [user, setUser] = useState<User | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [logins, setLogins] = useState<LoginResponse[]>([])
+  const [loginsError, setLoginsError] = useState<string | null>(null)
   const [sessions, setSessions] = useState<Session[]>([])
   const [sessionsError, setSessionsError] = useState<string | null>(null)
   const [showAddGroup, setShowAddGroup] = useState(false)
@@ -338,6 +421,20 @@ export function ShowUser({ client, id }: UserViewProps) {
       }
     }
 
+    const getLogins = async () => {
+      try {
+        const response = await client.logins.listLogins(id)
+        setLogins(response.items)
+        setLoginsError(null)
+      } catch (err) {
+        const error = err as Error | AxiosError
+        if (!axios.isAxiosError(error))
+          throw error
+        setLoginsError(error.response?.data?.error || error.message)
+        throw error
+      }
+    }
+
     const getSessions = async () => {
       try {
         const response = await client.sessions.listSessions(id)
@@ -353,6 +450,7 @@ export function ShowUser({ client, id }: UserViewProps) {
     }
 
     getUser()
+    getLogins()
     getSessions()
   }, [id, showAddGroup, showAddPolicy])
 
@@ -406,10 +504,16 @@ export function ShowUser({ client, id }: UserViewProps) {
         <UserPublicKeys user={user} />
       </div>
       }
+      {logins.length > 0 &&
+      <div class="section">
+        <UserLogins client={client} user={user} logins={logins} />
+        {loginsError && <p class="error">{loginsError}</p>}
+      </div>
+      }
       {sessions.length > 0 &&
       <div class="section">
-        {sessionsError && <p class="error">{sessionsError}</p>}
         <UserSessions client={client} user={user} sessions={sessions} />
+        {sessionsError && <p class="error">{sessionsError}</p>}
       </div>
       }
       <button onClick={onClickDelete}>Delete</button>
