@@ -130,7 +130,7 @@
   display: flex;
   flex: 1 1 1px;
   flex-direction: column;
-  overflow: auto;
+  min-height: 1px;
 }
 .list-view table thead tr {
   display: flex;
@@ -139,6 +139,10 @@
 }
 .list-view table thead tr th {
   flex-basis: 40em;
+}
+.list-view table tbody {
+  padding: 1em 0;
+  overflow: auto;
 }
 .list-view table tbody tr {
   display: flex;
