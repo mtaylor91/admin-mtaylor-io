@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios'
 import Router from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 
@@ -60,8 +61,23 @@ export function App() {
       const sessionId = localStorage.getItem('MTAYLOR_IO_SESSION_ID')
       const sessionToken = localStorage.getItem('MTAYLOR_IO_SESSION_TOKEN')
       if (id && secretKey && sessionId && sessionToken) {
-        await client.refresh(id, secretKey, sessionId, sessionToken)
-        setSessionId(client.sessionId)
+        try {
+          await client.refresh(id, secretKey, sessionId, sessionToken)
+          setSessionId(client.sessionId)
+        } catch (e) {
+          const err = e as Error | AxiosError
+          if (!axios.isAxiosError(err)) {
+            throw e
+          }
+          if (err.response?.status === 401) {
+            console.log('Session expired')
+            localStorage.removeItem('MTAYLOR_IO_ID')
+            localStorage.removeItem('MTAYLOR_IO_SECRET_KEY')
+            localStorage.removeItem('MTAYLOR_IO_SESSION_ID')
+            localStorage.removeItem('MTAYLOR_IO_SESSION_TOKEN')
+            client.logout()
+          }
+        }
       }
     }
 
