@@ -43,7 +43,14 @@ function UserEmail({ user }: { user: User }) {
 }
 
 
-function UserGroups({ client, user }: { client: IAM, user: User }) {
+interface UserGroupsProps {
+  client: IAM
+  user: User
+  refresh: () => void
+}
+
+
+function UserGroups({ client, user, refresh }: UserGroupsProps) {
   const thead = (
     <thead>
       <tr>
@@ -59,7 +66,9 @@ function UserGroups({ client, user }: { client: IAM, user: User }) {
       {user.groups.map(group => {
         const onClickDelete = async () => {
           await client.groups.removeMember(group.id, user.id)
+          refresh()
         }
+
         return (
           <tr>
             <td>
@@ -87,7 +96,14 @@ function UserGroups({ client, user }: { client: IAM, user: User }) {
 }
 
 
-function UserPolicies({ client, user }: { client: IAM, user: User }) {
+interface UserPoliciesProps {
+  client: IAM
+  user: User
+  refresh: () => void
+}
+
+
+function UserPolicies({ client, user, refresh }: UserPoliciesProps) {
   const thead = (
     <thead>
       <tr>
@@ -103,6 +119,7 @@ function UserPolicies({ client, user }: { client: IAM, user: User }) {
       {user.policies.map(policy => {
         const onClickDelete = async () => {
           await client.users.detachPolicy(user.id, policy.id)
+          refresh()
         }
         return (
           <tr>
@@ -131,7 +148,14 @@ function UserPolicies({ client, user }: { client: IAM, user: User }) {
 }
 
 
-function UserPublicKeys({ user }: { user: User }) {
+interface UserPublicKeysProps {
+  client: IAM
+  user: User
+  refresh: () => void
+}
+
+
+function UserPublicKeys({ client, user, refresh }: UserPublicKeysProps) {
   return (
     <>
       <h3>Public Keys</h3>
@@ -140,14 +164,23 @@ function UserPublicKeys({ user }: { user: User }) {
           <tr>
             <th>Key</th>
             <th>Description</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {user.publicKeys.map(key => {
+            const onClickDelete = async () => {
+              await client.publicKeys.deletePublicKey(key.key, user.id)
+              refresh()
+            }
+
             return (
               <tr>
                 <td>{key.key}</td>
                 <td>{key.description}</td>
+                <td>
+                  <button onClick={onClickDelete}>Delete</button>
+                </td>
               </tr>
             )
           })}
@@ -162,23 +195,27 @@ interface UserLoginsProps {
   client: IAM
   user: User
   logins: LoginResponse[]
+  refresh: () => void
 }
 
 
-function UserLogins({ client, user, logins }: UserLoginsProps) {
+function UserLogins({ client, user, logins, refresh }: UserLoginsProps) {
   const onClickDeny = async (event: Event, login: LoginResponse) => {
     event.preventDefault()
     await client.logins.denyLogin(login.id, user.id)
+    refresh()
   }
 
   const onClickGrant = async (event: Event, login: LoginResponse) => {
     event.preventDefault()
     await client.logins.grantLogin(login.id, user.id)
+    refresh()
   }
 
   const onClickDelete = async (event: Event, login: LoginResponse) => {
     event.preventDefault()
     await client.logins.deleteLogin(login.id, user.id)
+    refresh()
   }
 
   return (
@@ -241,13 +278,15 @@ interface UserSessionsProps {
   client: IAM
   user: User
   sessions: Session[]
+  refresh: () => void
 }
 
 
-function UserSessions({ client, user, sessions }: UserSessionsProps) {
+function UserSessions({ client, user, sessions, refresh }: UserSessionsProps) {
   const onClickDelete = async (event: Event, session: Session) => {
     event.preventDefault()
     await client.sessions.deleteSession(session.id, user.id)
+    refresh()
   }
 
   return (
@@ -401,6 +440,11 @@ export function ShowUser({ client, id }: UserViewProps) {
   const [sessionsError, setSessionsError] = useState<string | null>(null)
   const [showAddGroup, setShowAddGroup] = useState(false)
   const [showAddPolicy, setShowAddPolicy] = useState(false)
+  const [refreshCount, setRefreshCount] = useState(0)
+
+  const refresh = () => {
+    setRefreshCount(refreshCount + 1)
+  }
 
   useEffect(() => {
     if (id === undefined) {
@@ -452,7 +496,7 @@ export function ShowUser({ client, id }: UserViewProps) {
     getUser()
     getLogins()
     getSessions()
-  }, [id, showAddGroup, showAddPolicy])
+  }, [id, showAddGroup, showAddPolicy, refreshCount])
 
   if (user === null) {
     return error ? <p class="error">{error}</p> : <p>Loading...</p>
@@ -483,17 +527,17 @@ export function ShowUser({ client, id }: UserViewProps) {
         {error && <p class="error">{error}</p>}
         <p>{user.id}</p>
       </div>
-      <UserName user={user} />
-      <UserEmail user={user} />
+      <UserName user={user}/>
+      <UserEmail user={user}/>
       <div class="section">
-        <UserGroups client={client} user={user} />
+        <UserGroups client={client} user={user} refresh={refresh}/>
         <button class="background-dark border-radius-bottom"
           onClick={() => setShowAddGroup(true)}>
           Add Group
         </button>
       </div>
       <div class="section">
-        <UserPolicies client={client} user={user} />
+        <UserPolicies client={client} user={user} refresh={refresh}/>
         <button class="background-dark border-radius-bottom"
           onClick={() => setShowAddPolicy(true)}>
           Add Policy
@@ -501,18 +545,18 @@ export function ShowUser({ client, id }: UserViewProps) {
       </div>
       {user.publicKeys.length > 0 &&
       <div class="section">
-        <UserPublicKeys user={user} />
+        <UserPublicKeys client={client} user={user} refresh={refresh}/>
       </div>
       }
       {logins.length > 0 &&
       <div class="section">
-        <UserLogins client={client} user={user} logins={logins} />
+        <UserLogins client={client} user={user} logins={logins} refresh={refresh}/>
         {loginsError && <p class="error">{loginsError}</p>}
       </div>
       }
       {sessions.length > 0 &&
       <div class="section">
-        <UserSessions client={client} user={user} sessions={sessions} />
+        <UserSessions client={client} user={user} sessions={sessions} refresh={refresh}/>
         {sessionsError && <p class="error">{sessionsError}</p>}
       </div>
       }
