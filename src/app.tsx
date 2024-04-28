@@ -44,14 +44,12 @@ export function App() {
   }
 
   const logout = async () => {
-    await client.logout()
-
     localStorage.removeItem('MTAYLOR_IO_ID')
     localStorage.removeItem('MTAYLOR_IO_SECRET_KEY')
     localStorage.removeItem('MTAYLOR_IO_SESSION_ID')
     localStorage.removeItem('MTAYLOR_IO_SESSION_TOKEN')
-
     setSessionId(null)
+    await client.logout()
   }
 
   useEffect(() => {
@@ -71,11 +69,7 @@ export function App() {
           }
           if (err.response?.status === 401) {
             console.log('Session expired')
-            localStorage.removeItem('MTAYLOR_IO_ID')
-            localStorage.removeItem('MTAYLOR_IO_SECRET_KEY')
-            localStorage.removeItem('MTAYLOR_IO_SESSION_ID')
-            localStorage.removeItem('MTAYLOR_IO_SESSION_TOKEN')
-            client.logout()
+            logout()
           }
         }
       }
