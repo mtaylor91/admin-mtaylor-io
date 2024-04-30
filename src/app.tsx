@@ -7,6 +7,7 @@ import IAM from 'iam-mtaylor-io-js'
 import { CreateGroup } from './create/group'
 import { CreatePolicy } from './create/policy'
 import { CreateUser } from './create/user'
+import { EditUserName, EditUserEmail } from './edit/user'
 import { Login } from './login'
 import { HeaderMenu, SideMenu } from './menu'
 import { ShowUser } from './show/user'
@@ -98,6 +99,8 @@ export function App() {
                 <CreateGroup path="/create/group" client={client}/>
                 <CreatePolicy path="/create/policy" client={client}/>
                 <CreateUser path="/create/user" client={client}/>
+                <EditUserName path="/edit/user/:id/name" client={client}/>
+                <EditUserEmail path="/edit/user/:id/email" client={client}/>
                 <ShowUsers path="/users" client={client}/>
                 <ShowUser path="/users/:id" client={client} />
                 <ShowGroups path="/groups" client={client} />

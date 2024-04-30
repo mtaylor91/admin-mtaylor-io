@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+import { Link } from 'preact-router/match'
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import IAM from 'iam-mtaylor-io-js'
@@ -21,6 +22,13 @@ function UserName({ user }: { user: User }) {
       <div class="section">
         <h3>Name</h3>
         <p class="background-dark border-radius">{user.name}</p>
+        <Link href={`/edit/user/${user.id}/name`}>Edit</Link>
+      </div>
+    )
+  } else {
+    return (
+      <div class="section">
+        <Link href={`/edit/user/${user.id}/name`}>Add Name</Link>
       </div>
     )
   }
@@ -35,6 +43,13 @@ function UserEmail({ user }: { user: User }) {
       <div class="section">
         <h3>Email</h3>
         <p class="background-dark border-radius">{user.email}</p>
+        <Link href={`/edit/user/${user.id}/email`}>Edit</Link>
+      </div>
+    )
+  } else {
+    return (
+      <div class="section">
+        <Link href={`/edit/user/${user.id}/email`}>Add Email</Link>
       </div>
     )
   }
