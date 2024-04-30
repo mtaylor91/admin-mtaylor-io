@@ -176,8 +176,8 @@ function UserPublicKeys({ client, user, refresh }: UserPublicKeysProps) {
 
             return (
               <tr>
-                <td>{key.key}</td>
-                <td>{key.description}</td>
+                <td><span>{key.key}</span></td>
+                <td><span>{key.description}</span></td>
                 <td>
                   <button onClick={onClickDelete}>Delete</button>
                 </td>
