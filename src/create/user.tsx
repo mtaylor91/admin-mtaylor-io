@@ -5,12 +5,12 @@ import IAM, { Principal } from 'iam-mtaylor-io-js'
 
 
 interface CreateUserProps {
-  client: IAM
+  iam: IAM
   path?: string
 }
 
 
-export function CreateUser({ client }: CreateUserProps) {
+export function CreateUser({ iam }: CreateUserProps) {
   const [createUserName, setCreateUserName] = useState('')
   const [createUserEmail, setCreateUserEmail] = useState('')
   const [newUserPrincipal, setNewUserPrincipal] = useState<Principal | null>(null)
@@ -30,7 +30,7 @@ export function CreateUser({ client }: CreateUserProps) {
     const email = createUserEmail === '' ? null : createUserEmail
 
     try {
-      const principal = await client.users.createUser(name, email)
+      const principal = await iam.users.createUser(name, email)
       setNewUserPrincipal(principal)
     } catch (err) {
       const error = err as Error | AxiosError

@@ -19,7 +19,7 @@ import { ShowGroup } from './show/group'
 import './app.css'
 
 
-const client = new IAM()
+const iam = new IAM()
 
 
 export function App() {
@@ -28,18 +28,18 @@ export function App() {
   const [sessionId, setSessionId] = useState<string | null>(null)
 
   const login = async () => {
-    await client.login(id, secretKey)
+    await iam.login(id, secretKey)
 
-    if (client.sessionId === null || client.sessionToken === null) {
+    if (iam.sessionId === null || iam.sessionToken === null) {
       return
     }
 
     localStorage.setItem('MTAYLOR_IO_ID', id)
     localStorage.setItem('MTAYLOR_IO_SECRET_KEY', secretKey)
-    localStorage.setItem('MTAYLOR_IO_SESSION_ID', client.sessionId)
-    localStorage.setItem('MTAYLOR_IO_SESSION_TOKEN', client.sessionToken)
+    localStorage.setItem('MTAYLOR_IO_SESSION_ID', iam.sessionId)
+    localStorage.setItem('MTAYLOR_IO_SESSION_TOKEN', iam.sessionToken)
 
-    setSessionId(client.sessionId)
+    setSessionId(iam.sessionId)
     setId('')
     setSecretKey('')
   }
@@ -50,7 +50,7 @@ export function App() {
     localStorage.removeItem('MTAYLOR_IO_SESSION_ID')
     localStorage.removeItem('MTAYLOR_IO_SESSION_TOKEN')
     setSessionId(null)
-    await client.logout()
+    await iam.logout()
   }
 
   useEffect(() => {
@@ -61,8 +61,8 @@ export function App() {
       const sessionToken = localStorage.getItem('MTAYLOR_IO_SESSION_TOKEN')
       if (id && secretKey && sessionId && sessionToken) {
         try {
-          await client.refresh(id, secretKey, sessionId, sessionToken)
-          setSessionId(client.sessionId)
+          await iam.refresh(id, secretKey, sessionId, sessionToken)
+          setSessionId(iam.sessionId)
         } catch (e) {
           const err = e as Error | AxiosError
           if (!axios.isAxiosError(err)) {
@@ -89,24 +89,24 @@ export function App() {
   } else {
     return (
       <>
-        <HeaderMenu client={client} logout={logout} />
+        <HeaderMenu iam={iam} logout={logout} />
         <div class="wrapper">
           <div class="container">
             <SideMenu />
             <main class="content">
               <Router>
-                <ShowUsers path="/" client={client}/>
-                <CreateGroup path="/create/group" client={client}/>
-                <CreatePolicy path="/create/policy" client={client}/>
-                <CreateUser path="/create/user" client={client}/>
-                <EditUserName path="/edit/user/:id/name" client={client}/>
-                <EditUserEmail path="/edit/user/:id/email" client={client}/>
-                <ShowUsers path="/users" client={client}/>
-                <ShowUser path="/users/:id" client={client} />
-                <ShowGroups path="/groups" client={client} />
-                <ShowGroup path="/groups/:id" client={client} />
-                <ShowPolicies path="/policies" client={client} />
-                <ShowPolicy path="/policies/:id" client={client} />
+                <ShowUsers path="/" iam={iam}/>
+                <CreateGroup path="/create/group" iam={iam}/>
+                <CreatePolicy path="/create/policy" iam={iam}/>
+                <CreateUser path="/create/user" iam={iam}/>
+                <EditUserName path="/edit/user/:id/name" iam={iam}/>
+                <EditUserEmail path="/edit/user/:id/email" iam={iam}/>
+                <ShowUsers path="/users" iam={iam}/>
+                <ShowUser path="/users/:id" iam={iam} />
+                <ShowGroups path="/groups" iam={iam} />
+                <ShowGroup path="/groups/:id" iam={iam} />
+                <ShowPolicies path="/policies" iam={iam} />
+                <ShowPolicy path="/policies/:id" iam={iam} />
               </Router>
             </main>
           </div>

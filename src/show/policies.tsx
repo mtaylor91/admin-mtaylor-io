@@ -6,7 +6,7 @@ import { Pagination } from '../components/pagination'
 
 
 interface ShowPoliciesProps {
-  client: IAM
+  iam: IAM
   path?: string
   offset?: number
   limit?: number
@@ -17,7 +17,7 @@ interface ShowPoliciesProps {
 
 
 export function ShowPolicies({
-  client, offset, limit, search, sort, order
+  iam, offset, limit, search, sort, order
 }: ShowPoliciesProps) {
   const [error, setError] = useState<string | null>(null)
   const [total, setTotal] = useState(0)
@@ -32,7 +32,7 @@ export function ShowPolicies({
   useEffect(() => {
     const getPolicies = async () => {
       try {
-        const response = await client.policies.listPolicies(
+        const response = await iam.policies.listPolicies(
           search, sort as SortPoliciesBy, order as SortOrder, offset, limit)
         const policies = response.items
         setTotal(response.total)

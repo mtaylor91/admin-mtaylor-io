@@ -5,13 +5,13 @@ import IAM from 'iam-mtaylor-io-js'
 
 
 interface EditUserProps {
-  client: IAM
+  iam: IAM
   id?: string
   path?: string
 }
 
 
-export function EditUserName({ client, id }: EditUserProps) {
+export function EditUserName({ iam, id }: EditUserProps) {
   const [error, setError] = useState<string | null>(null)
 
   const onSubmit = async (e: Event) => {
@@ -22,7 +22,7 @@ export function EditUserName({ client, id }: EditUserProps) {
     e.preventDefault()
     const name = (document.getElementById('name') as HTMLInputElement).value
     try {
-      await client.users.updateUser(id, { name })
+      await iam.users.updateUser(id, { name })
     } catch (error) {
       const err = error as AxiosError | Error
       if (!axios.isAxiosError(err))
@@ -52,7 +52,7 @@ export function EditUserName({ client, id }: EditUserProps) {
 }
 
 
-export function EditUserEmail({ client, id }: EditUserProps) {
+export function EditUserEmail({ iam, id }: EditUserProps) {
   const [error, setError] = useState<string | null>(null)
 
   const onSubmit = async (e: Event) => {
@@ -63,7 +63,7 @@ export function EditUserEmail({ client, id }: EditUserProps) {
     e.preventDefault()
     const email = (document.getElementById('email') as HTMLInputElement).value
     try {
-      await client.users.updateUser(id, { email })
+      await iam.users.updateUser(id, { email })
     } catch (error) {
       const err = error as AxiosError | Error
       if (!axios.isAxiosError(err))

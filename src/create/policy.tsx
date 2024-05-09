@@ -112,12 +112,12 @@ function CreatePolicyStatementsView({
 
 
 interface CreatePolicyProps {
-  client: IAM
+  iam: IAM
   path?: string
 }
 
 
-export function CreatePolicy({ client }: CreatePolicyProps) {
+export function CreatePolicy({ iam }: CreatePolicyProps) {
   const [error, setError] = useState<string | null>(null)
   const [newPolicyName, setNewPolicyName] = useState('')
   const [newPolicyHostname, setNewPolicyHostname] = useState('')
@@ -127,14 +127,14 @@ export function CreatePolicy({ client }: CreatePolicyProps) {
     event.preventDefault()
     try {
       if (newPolicyName === '') {
-        const policy = await client.policies.createPolicy({
+        const policy = await iam.policies.createPolicy({
           hostname: newPolicyHostname,
           statements: newPolicyStatements
         })
 
         route(`/policies/${resolvePolicyId(policy)}`)
       } else {
-        const policy = await client.policies.createPolicy({
+        const policy = await iam.policies.createPolicy({
           name: newPolicyName, hostname: newPolicyHostname,
           statements: newPolicyStatements
         })

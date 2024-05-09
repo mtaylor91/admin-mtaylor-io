@@ -8,7 +8,7 @@ import { Pagination } from '../components/pagination'
 
 
 interface ShowUsersProps {
-  client: IAM,
+  iam: IAM,
   path?: string,
   offset?: number,
   limit?: number,
@@ -19,7 +19,7 @@ interface ShowUsersProps {
 
 
 export function ShowUsers({
-  client, offset, limit, search, sort, order
+  iam, offset, limit, search, sort, order
 }: ShowUsersProps) {
   const [total, setTotal] = useState(0)
   const [users, setUsers] = useState<UserIdentity[]>([])
@@ -33,7 +33,7 @@ export function ShowUsers({
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const response = await client.users.listUsers(
+        const response = await iam.users.listUsers(
           search, sort as SortUsersBy, order as SortOrder, offset, limit)
         const users = response.items
         setTotal(response.total)

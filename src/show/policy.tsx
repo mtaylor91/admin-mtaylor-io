@@ -36,13 +36,13 @@ function PolicyStatements({ policy }: PolicyStatementsProps) {
 
 
 interface ShowPolicyProps {
-  client: IAM
+  iam: IAM
   id?: string
   path?: string
 }
 
 
-export function ShowPolicy({ client, id }: ShowPolicyProps) {
+export function ShowPolicy({ iam, id }: ShowPolicyProps) {
   const [policy, setPolicy] = useState<Policy | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -53,7 +53,7 @@ export function ShowPolicy({ client, id }: ShowPolicyProps) {
 
     const getPolicy = async () => {
       try {
-        const policy = await client.policies.getPolicy(id)
+        const policy = await iam.policies.getPolicy(id)
         setPolicy(policy)
         setError(null)
       } catch (err) {
@@ -74,7 +74,7 @@ export function ShowPolicy({ client, id }: ShowPolicyProps) {
 
   const onClickDelete = async (event: Event) => {
     event.preventDefault()
-    await client.policies.deletePolicy(id)
+    await iam.policies.deletePolicy(id)
     route('/policies')
   }
 

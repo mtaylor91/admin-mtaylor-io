@@ -6,7 +6,7 @@ import { Pagination } from '../components/pagination'
 
 
 interface ShowGroupsProps {
-  client: IAM
+  iam: IAM
   path?: string
   offset?: number
   limit?: number
@@ -17,7 +17,7 @@ interface ShowGroupsProps {
 
 
 export function ShowGroups(props: ShowGroupsProps) {
-  const {client, search} = props
+  const {iam, search} = props
   const [total, setTotal] = useState(0)
   const [groups, setGroups] = useState<GroupIdentity[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -31,7 +31,7 @@ export function ShowGroups(props: ShowGroupsProps) {
     const getGroups = async () => {
       try {
         const response = await
-          client.groups.listGroups(search, sort, order, offset, limit)
+          iam.groups.listGroups(search, sort, order, offset, limit)
 
         const groups = response.items
         setTotal(response.total)

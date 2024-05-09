@@ -25,12 +25,12 @@ function CreateGroupForm({ onSubmit, onInput }: CreateGroupFormProps) {
 
 
 interface CreateGroupProps {
-  client: IAM
+  iam: IAM
   path?: string
 }
 
 
-export function CreateGroup({ client }: CreateGroupProps) {
+export function CreateGroup({ iam }: CreateGroupProps) {
   const [error, setError] = useState<string | null>(null)
   const [newGroupName, setNewGroupName] = useState('')
 
@@ -38,10 +38,10 @@ export function CreateGroup({ client }: CreateGroupProps) {
     event.preventDefault()
     try {
       if (newGroupName === '') {
-        const group = await client.groups.createGroup()
+        const group = await iam.groups.createGroup()
         route(`/groups/${resolveGroupId(group)}`)
       } else {
-        const group = await client.groups.createGroup(newGroupName)
+        const group = await iam.groups.createGroup(newGroupName)
         route(`/groups/${resolveGroupId(group)}`)
       }
     } catch (err) {

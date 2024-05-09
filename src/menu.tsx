@@ -3,16 +3,16 @@ import IAM from 'iam-mtaylor-io-js'
 
 
 interface HeaderMenuProps {
-  client: IAM
+  iam: IAM
   logout: () => void
 }
 
 
-export function HeaderMenu({ client, logout }: HeaderMenuProps) {
+export function HeaderMenu({ iam, logout }: HeaderMenuProps) {
   return (
     <header class="menubar">
       <span class="menubar-user">
-        Logged in as {client.userId}
+        Logged in as {iam.userId}
       </span>
       <button onClick={logout}>Logout</button>
     </header>

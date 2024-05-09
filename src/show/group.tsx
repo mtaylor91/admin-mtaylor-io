@@ -7,7 +7,7 @@ import { resolvePolicyIdentifier } from '../util'
 
 
 interface ShowGroupProps {
-  client: IAM
+  iam: IAM
   id?: string
   path?: string
 }
@@ -27,7 +27,7 @@ function GroupName({ group }: { group: Group }) {
 }
 
 
-function GroupUsers({ client, group }: { client: IAM, group: Group }) {
+function GroupUsers({ iam, group }: { iam: IAM, group: Group }) {
   const thead = (
     <thead>
       <tr>
@@ -42,7 +42,7 @@ function GroupUsers({ client, group }: { client: IAM, group: Group }) {
     <tbody>
       {group.users.map(user => {
         const onClickDelete = async () => {
-          await client.groups.removeMember(group.id, user.id)
+          await iam.groups.removeMember(group.id, user.id)
         }
 
         return (
@@ -74,7 +74,7 @@ function GroupUsers({ client, group }: { client: IAM, group: Group }) {
 }
 
 
-function GroupPolicies({ client, group }: { client: IAM, group: Group }) {
+function GroupPolicies({ iam, group }: { iam: IAM, group: Group }) {
 
   const thead = (
     <thead>
@@ -90,7 +90,7 @@ function GroupPolicies({ client, group }: { client: IAM, group: Group }) {
     <tbody>
       {group.policies.map(policy => {
         const onClickDelete = async () => {
-          await client.groups.detachPolicy(group.id, policy.id)
+          await iam.groups.detachPolicy(group.id, policy.id)
         }
 
         return (
@@ -123,13 +123,13 @@ function GroupPolicies({ client, group }: { client: IAM, group: Group }) {
 
 
 interface AddUserProps {
-  client: IAM
+  iam: IAM
   group: Group
   setShowAddUser: (show: boolean) => void
 }
 
 
-function AddUser({ client, group, setShowAddUser }: AddUserProps) {
+function AddUser({ iam, group, setShowAddUser }: AddUserProps) {
   const [users, setUsers] = useState<UserIdentity[]>([])
 
   const onClickCancel = (event: Event) => {
@@ -139,7 +139,7 @@ function AddUser({ client, group, setShowAddUser }: AddUserProps) {
 
   useEffect(() => {
     const getUsers = async () => {
-      const response = await client.users.listUsers()
+      const response = await iam.users.listUsers()
       const users = response.items
       setUsers(users.filter(user =>
         !group.users.some(groupUser =>
@@ -157,7 +157,7 @@ function AddUser({ client, group, setShowAddUser }: AddUserProps) {
         {users.map(user => {
           const userId = resolveUserIdentifier(user)
           const addUser = async () => {
-            await client.groups.addMember(group.id, userId)
+            await iam.groups.addMember(group.id, userId)
             setShowAddUser(false)
           }
           return (
@@ -172,13 +172,13 @@ function AddUser({ client, group, setShowAddUser }: AddUserProps) {
 
 
 interface AddPolicyProps {
-  client: IAM
+  iam: IAM
   group: Group
   setShowAddPolicy: (show: boolean) => void
 }
 
 
-function AddPolicy({ client, group, setShowAddPolicy }: AddPolicyProps) {
+function AddPolicy({ iam, group, setShowAddPolicy }: AddPolicyProps) {
   const [policies, setPolicies] = useState<PolicyIdentity[]>([])
 
   const onClickCancel = (event: Event) => {
@@ -188,7 +188,7 @@ function AddPolicy({ client, group, setShowAddPolicy }: AddPolicyProps) {
 
   useEffect(() => {
     const getPolicies = async () => {
-      const response = await client.policies.listPolicies()
+      const response = await iam.policies.listPolicies()
       const policies = response.items
       setPolicies(policies.filter(policy =>
         !group.policies.some(groupPolicy =>
@@ -206,7 +206,7 @@ function AddPolicy({ client, group, setShowAddPolicy }: AddPolicyProps) {
         {policies.map(policy => {
           const policyId = resolvePolicyIdentifier(policy)
           const addPolicy = async () => {
-            await client.groups.attachPolicy(group.id, policyId)
+            await iam.groups.attachPolicy(group.id, policyId)
             setShowAddPolicy(false)
           }
           return (
@@ -220,7 +220,7 @@ function AddPolicy({ client, group, setShowAddPolicy }: AddPolicyProps) {
 }
 
 
-export function ShowGroup({ client, id }: ShowGroupProps) {
+export function ShowGroup({ iam, id }: ShowGroupProps) {
   const [error, setError] = useState<string | null>(null)
   const [group, setGroup] = useState<Group | null>(null)
   const [showAddUser, setShowAddUser] = useState(false)
@@ -233,7 +233,7 @@ export function ShowGroup({ client, id }: ShowGroupProps) {
 
     const getGroup = async () => {
       try {
-        const group = await client.groups.getGroup(id)
+        const group = await iam.groups.getGroup(id)
         setGroup(group)
         setError(null)
       } catch (err) {
@@ -251,9 +251,9 @@ export function ShowGroup({ client, id }: ShowGroupProps) {
   if (group === null) {
     return error ? <p class="error">{error}</p> : <p>Loading...</p>
   } else if (showAddUser) {
-    return <AddUser client={client} group={group} setShowAddUser={setShowAddUser} />
+    return <AddUser iam={iam} group={group} setShowAddUser={setShowAddUser} />
   } else if (showAddPolicy) {
-    return <AddPolicy client={client} group={group} setShowAddPolicy={setShowAddPolicy} />
+    return <AddPolicy iam={iam} group={group} setShowAddPolicy={setShowAddPolicy} />
   }
 
   const onClickAddUser = (event: Event) => {
@@ -270,7 +270,7 @@ export function ShowGroup({ client, id }: ShowGroupProps) {
 
   const onClickDelete = async (event: Event) => {
     event.preventDefault()
-    await client.groups.deleteGroup(group.id)
+    await iam.groups.deleteGroup(group.id)
     route('/groups')
   }
 
@@ -282,12 +282,12 @@ export function ShowGroup({ client, id }: ShowGroupProps) {
       </div>
       <GroupName group={group} />
       <div class="section">
-        <GroupUsers client={client} group={group} />
+        <GroupUsers iam={iam} group={group} />
         <button class="background-dark border-radius-bottom"
           onClick={onClickAddUser}>Add User</button>
       </div>
       <div class="section">
-        <GroupPolicies client={client} group={group} />
+        <GroupPolicies iam={iam} group={group} />
         <button class="background-dark border-radius-bottom"
           onClick={onClickAddPolicy}>Add Policy</button>
       </div>

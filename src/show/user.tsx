@@ -10,7 +10,7 @@ import { resolvePolicyIdentifier } from '../util'
 
 
 interface UserViewProps {
-  client: IAM
+  iam: IAM
   id?: string
   path?: string
 }
@@ -59,13 +59,13 @@ function UserEmail({ user }: { user: User }) {
 
 
 interface UserGroupsProps {
-  client: IAM
+  iam: IAM
   user: User
   refresh: () => void
 }
 
 
-function UserGroups({ client, user, refresh }: UserGroupsProps) {
+function UserGroups({ iam, user, refresh }: UserGroupsProps) {
   const thead = (
     <thead>
       <tr>
@@ -80,7 +80,7 @@ function UserGroups({ client, user, refresh }: UserGroupsProps) {
     <tbody>
       {user.groups.map(group => {
         const onClickDelete = async () => {
-          await client.groups.removeMember(group.id, user.id)
+          await iam.groups.removeMember(group.id, user.id)
           refresh()
         }
 
@@ -112,13 +112,13 @@ function UserGroups({ client, user, refresh }: UserGroupsProps) {
 
 
 interface UserPoliciesProps {
-  client: IAM
+  iam: IAM
   user: User
   refresh: () => void
 }
 
 
-function UserPolicies({ client, user, refresh }: UserPoliciesProps) {
+function UserPolicies({ iam, user, refresh }: UserPoliciesProps) {
   const thead = (
     <thead>
       <tr>
@@ -133,7 +133,7 @@ function UserPolicies({ client, user, refresh }: UserPoliciesProps) {
     <tbody>
       {user.policies.map(policy => {
         const onClickDelete = async () => {
-          await client.users.detachPolicy(user.id, policy.id)
+          await iam.users.detachPolicy(user.id, policy.id)
           refresh()
         }
         return (
@@ -164,13 +164,13 @@ function UserPolicies({ client, user, refresh }: UserPoliciesProps) {
 
 
 interface UserPublicKeysProps {
-  client: IAM
+  iam: IAM
   user: User
   refresh: () => void
 }
 
 
-function UserPublicKeys({ client, user, refresh }: UserPublicKeysProps) {
+function UserPublicKeys({ iam, user, refresh }: UserPublicKeysProps) {
   return (
     <>
       <h3>Public Keys</h3>
@@ -185,7 +185,7 @@ function UserPublicKeys({ client, user, refresh }: UserPublicKeysProps) {
         <tbody>
           {user.publicKeys.map(key => {
             const onClickDelete = async () => {
-              await client.publicKeys.deletePublicKey(key.key, user.id)
+              await iam.publicKeys.deletePublicKey(key.key, user.id)
               refresh()
             }
 
@@ -207,29 +207,29 @@ function UserPublicKeys({ client, user, refresh }: UserPublicKeysProps) {
 
 
 interface UserLoginsProps {
-  client: IAM
+  iam: IAM
   user: User
   logins: LoginResponse[]
   refresh: () => void
 }
 
 
-function UserLogins({ client, user, logins, refresh }: UserLoginsProps) {
+function UserLogins({ iam, user, logins, refresh }: UserLoginsProps) {
   const onClickDeny = async (event: Event, login: LoginResponse) => {
     event.preventDefault()
-    await client.logins.denyLogin(login.id, user.id)
+    await iam.logins.denyLogin(login.id, user.id)
     refresh()
   }
 
   const onClickGrant = async (event: Event, login: LoginResponse) => {
     event.preventDefault()
-    await client.logins.grantLogin(login.id, user.id)
+    await iam.logins.grantLogin(login.id, user.id)
     refresh()
   }
 
   const onClickDelete = async (event: Event, login: LoginResponse) => {
     event.preventDefault()
-    await client.logins.deleteLogin(login.id, user.id)
+    await iam.logins.deleteLogin(login.id, user.id)
     refresh()
   }
 
@@ -290,17 +290,17 @@ function UserLogins({ client, user, logins, refresh }: UserLoginsProps) {
 
 
 interface UserSessionsProps {
-  client: IAM
+  iam: IAM
   user: User
   sessions: Session[]
   refresh: () => void
 }
 
 
-function UserSessions({ client, user, sessions, refresh }: UserSessionsProps) {
+function UserSessions({ iam, user, sessions, refresh }: UserSessionsProps) {
   const onClickDelete = async (event: Event, session: Session) => {
     event.preventDefault()
-    await client.sessions.deleteSession(session.id, user.id)
+    await iam.sessions.deleteSession(session.id, user.id)
     refresh()
   }
 
@@ -317,8 +317,8 @@ function UserSessions({ client, user, sessions, refresh }: UserSessionsProps) {
         </thead>
         <tbody>
           {sessions.map(session => {
-            const idClass = session.id === client.sessionId ? 'active' : ''
-            const addressClass = session.address === client.sessionAddress ? 'active' : ''
+            const idClass = session.id === iam.sessionId ? 'active' : ''
+            const addressClass = session.address === iam.sessionAddress ? 'active' : ''
             return (
               <tr>
                 <td>
@@ -343,18 +343,18 @@ function UserSessions({ client, user, sessions, refresh }: UserSessionsProps) {
 
 
 interface AddGroupProps {
-  client: IAM
+  iam: IAM
   user: User
   setShowAddGroup: (showAddGroup: boolean) => void
 }
 
 
-function AddGroup({ client, user, setShowAddGroup }: AddGroupProps) {
+function AddGroup({ iam, user, setShowAddGroup }: AddGroupProps) {
   const [groups, setGroups] = useState<GroupIdentity[]>([])
 
   useEffect(() => {
     const getGroups = async () => {
-      const response = await client.groups.listGroups()
+      const response = await iam.groups.listGroups()
       const groups = response.items
       setGroups(groups.filter(group =>
         !user.groups.some(userGroup =>
@@ -378,7 +378,7 @@ function AddGroup({ client, user, setShowAddGroup }: AddGroupProps) {
           const groupId = resolveGroupIdentifier(group)
           const onClickAddGroup = async (event: Event) => {
             event.preventDefault()
-            await client.groups.addMember(groupId, user.id)
+            await iam.groups.addMember(groupId, user.id)
             setShowAddGroup(false)
           }
           return (
@@ -395,18 +395,18 @@ function AddGroup({ client, user, setShowAddGroup }: AddGroupProps) {
 
 
 interface AddPolicyProps {
-  client: IAM
+  iam: IAM
   user: User
   setShowAddPolicy: (showAddPolicy: boolean) => void
 }
 
 
-function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
+function AddPolicy({ iam, user, setShowAddPolicy }: AddPolicyProps) {
   const [policies, setPolicies] = useState<PolicyIdentity[]>([])
 
   useEffect(() => {
     const getPolicies = async () => {
-      const response = await client.policies.listPolicies()
+      const response = await iam.policies.listPolicies()
       const policies = response.items
       setPolicies(policies.filter(policy =>
         !user.policies.some(userPolicy =>
@@ -430,7 +430,7 @@ function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
           const policyId = resolvePolicyIdentifier(policy)
           const onClickAddPolicy = async (event: Event) => {
             event.preventDefault()
-            await client.users.attachPolicy(user.id, policyId)
+            await iam.users.attachPolicy(user.id, policyId)
             setShowAddPolicy(false)
           }
           return (
@@ -446,7 +446,7 @@ function AddPolicy({ client, user, setShowAddPolicy }: AddPolicyProps) {
 }
 
 
-export function ShowUser({ client, id }: UserViewProps) {
+export function ShowUser({ iam, id }: UserViewProps) {
   const [user, setUser] = useState<User | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [logins, setLogins] = useState<LoginResponse[]>([])
@@ -468,7 +468,7 @@ export function ShowUser({ client, id }: UserViewProps) {
 
     const getUser = async () => {
       try {
-        const user = await client.users.getUser(id)
+        const user = await iam.users.getUser(id)
         setUser(user)
         setError(null)
       } catch (err) {
@@ -482,7 +482,7 @@ export function ShowUser({ client, id }: UserViewProps) {
 
     const getLogins = async () => {
       try {
-        const response = await client.logins.listLogins(id)
+        const response = await iam.logins.listLogins(id)
         setLogins(response.items)
         setLoginsError(null)
       } catch (err) {
@@ -496,7 +496,7 @@ export function ShowUser({ client, id }: UserViewProps) {
 
     const getSessions = async () => {
       try {
-        const response = await client.sessions.listSessions(id)
+        const response = await iam.sessions.listSessions(id)
         setSessions(response.items)
         setSessionsError(null)
       } catch (err) {
@@ -516,15 +516,15 @@ export function ShowUser({ client, id }: UserViewProps) {
   if (user === null) {
     return error ? <p class="error">{error}</p> : <p>Loading...</p>
   } else if (showAddGroup) {
-    return <AddGroup client={client} user={user} setShowAddGroup={setShowAddGroup} />
+    return <AddGroup iam={iam} user={user} setShowAddGroup={setShowAddGroup} />
   } else if (showAddPolicy) {
-    return <AddPolicy client={client} user={user} setShowAddPolicy={setShowAddPolicy} />
+    return <AddPolicy iam={iam} user={user} setShowAddPolicy={setShowAddPolicy} />
   }
 
   const onClickDelete = async (event: Event) => {
     event.preventDefault()
     try {
-      await client.users.deleteUser(user.id)
+      await iam.users.deleteUser(user.id)
       route('/users')
     } catch (err) {
       const error = err as Error | AxiosError
@@ -545,14 +545,14 @@ export function ShowUser({ client, id }: UserViewProps) {
       <UserName user={user}/>
       <UserEmail user={user}/>
       <div class="section">
-        <UserGroups client={client} user={user} refresh={refresh}/>
+        <UserGroups iam={iam} user={user} refresh={refresh}/>
         <button class="background-dark border-radius-bottom"
           onClick={() => setShowAddGroup(true)}>
           Add Group
         </button>
       </div>
       <div class="section">
-        <UserPolicies client={client} user={user} refresh={refresh}/>
+        <UserPolicies iam={iam} user={user} refresh={refresh}/>
         <button class="background-dark border-radius-bottom"
           onClick={() => setShowAddPolicy(true)}>
           Add Policy
@@ -560,18 +560,18 @@ export function ShowUser({ client, id }: UserViewProps) {
       </div>
       {user.publicKeys.length > 0 &&
       <div class="section">
-        <UserPublicKeys client={client} user={user} refresh={refresh}/>
+        <UserPublicKeys iam={iam} user={user} refresh={refresh}/>
       </div>
       }
       {logins.length > 0 &&
       <div class="section">
-        <UserLogins client={client} user={user} logins={logins} refresh={refresh}/>
+        <UserLogins iam={iam} user={user} logins={logins} refresh={refresh}/>
         {loginsError && <p class="error">{loginsError}</p>}
       </div>
       }
       {sessions.length > 0 &&
       <div class="section">
-        <UserSessions client={client} user={user} sessions={sessions} refresh={refresh}/>
+        <UserSessions iam={iam} user={user} sessions={sessions} refresh={refresh}/>
         {sessionsError && <p class="error">{sessionsError}</p>}
       </div>
       }
