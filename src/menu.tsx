@@ -30,6 +30,7 @@ export function SideMenu({}: SideMenuProps) {
       <Link activeClassName="active" href="/users">Users</Link>
       <Link activeClassName="active" href="/groups">Groups</Link>
       <Link activeClassName="active" href="/policies">Policies</Link>
+      <Link activeClassName="active" href="/sessions">Sessions</Link>
     </nav>
   )
 }

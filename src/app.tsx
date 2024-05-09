@@ -3,6 +3,7 @@ import Router from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 
 import IAM from 'iam-mtaylor-io-js'
+import Events from 'events-mtaylor-io-js'
 
 import { CreateGroup } from './create/group'
 import { CreatePolicy } from './create/policy'
@@ -16,10 +17,12 @@ import { ShowPolicy } from './show/policy'
 import { ShowPolicies } from './show/policies'
 import { ShowUsers } from './show/users'
 import { ShowGroup } from './show/group'
+import { ShowSessions } from './show/sessions'
 import './app.css'
 
 
 const iam = new IAM()
+const events = new Events(iam)
 
 
 export function App() {
@@ -107,6 +110,7 @@ export function App() {
                 <ShowGroup path="/groups/:id" iam={iam} />
                 <ShowPolicies path="/policies" iam={iam} />
                 <ShowPolicy path="/policies/:id" iam={iam} />
+                <ShowSessions path="/sessions" events={events} />
               </Router>
             </main>
           </div>

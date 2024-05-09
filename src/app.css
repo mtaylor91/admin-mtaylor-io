@@ -73,7 +73,11 @@
   text-decoration: none;
 }
 
-.menubar .search {
+.menubar input {
+  margin: 1em;
+}
+
+.menubar .error {
   margin: 1em;
 }
 
