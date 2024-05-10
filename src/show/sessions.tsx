@@ -82,7 +82,11 @@ function ShowSession({ iam, events, sessionId }: ShowSessionProps) {
   return (
     <tr>
       <td>
-        {error && <p class="error">{error}</p> || sessionId}
+        {error && <p class="error">{error}</p> || (
+        <Link href={`/sessions/${sessionId}`}>
+          {sessionId}
+        </Link>
+        )}
       </td>
       <td>
         {session?.address}

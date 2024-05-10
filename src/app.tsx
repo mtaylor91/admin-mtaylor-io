@@ -18,6 +18,7 @@ import { ShowPolicies } from './show/policies'
 import { ShowUsers } from './show/users'
 import { ShowGroup } from './show/group'
 import { ShowSessions } from './show/sessions'
+import { ShowSession } from './show/session'
 import './app.css'
 
 
@@ -111,6 +112,7 @@ export function App() {
                 <ShowPolicies path="/policies" iam={iam} />
                 <ShowPolicy path="/policies/:id" iam={iam} />
                 <ShowSessions path="/sessions" iam={iam} events={events} />
+                <ShowSession path="/sessions/:id" iam={iam} events={events} />
               </Router>
             </main>
           </div>
