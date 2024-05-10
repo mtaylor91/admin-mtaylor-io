@@ -110,7 +110,7 @@ export function App() {
                 <ShowGroup path="/groups/:id" iam={iam} />
                 <ShowPolicies path="/policies" iam={iam} />
                 <ShowPolicy path="/policies/:id" iam={iam} />
-                <ShowSessions path="/sessions" events={events} />
+                <ShowSessions path="/sessions" iam={iam} events={events} />
               </Router>
             </main>
           </div>
