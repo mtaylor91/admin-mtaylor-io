@@ -5,3 +5,5 @@ commonLabels:
 resources:
 - deployment.yml
 - service.yml
+images:
+- name: images.home.mtaylor.io/admin-mtaylor-io
