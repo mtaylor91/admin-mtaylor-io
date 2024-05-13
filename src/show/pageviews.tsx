@@ -28,7 +28,7 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
   useEffect(() => {
 
     const onMessage = (event: PageViewEvent) => {
-      setMessages((messages) => [...messages, event]);
+      setMessages((messages) => [...messages, event.data]);
     }
 
     const connect = async () => {
@@ -58,6 +58,7 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
       <table>
         <thead>
           <tr>
+            <th>Session</th>
             <th>Address</th>
             <th>Path</th>
             <th>Referrer</th>
@@ -66,6 +67,7 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
         <tbody>
           {messages.map((message, index) => (
             <tr key={index}>
+              <td>{message.session}</td>
               <td>{message.address}</td>
               <td>{message.path}</td>
               <td>{message.referrer}</td>
