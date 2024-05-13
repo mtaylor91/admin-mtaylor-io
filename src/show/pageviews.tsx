@@ -12,6 +12,7 @@ interface PageViewEvent {
   path: string
   referrer: string
   address?: string
+  session?: string
 }
 
 
@@ -28,7 +29,7 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
   useEffect(() => {
 
     const onMessage = (event: PageViewEvent) => {
-      setMessages((messages) => [...messages, event.data]);
+      setMessages((messages) => [...messages, event]);
     }
 
     const connect = async () => {
@@ -36,7 +37,7 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
         const url = `/topics/${ANALYTICS_TOPIC}/send-receive`
         await events.request('PUT', url);
         if (!events.socket.connected) await events.connect();
-        events.socket.onMessage(onMessage);
+        events.socket.onMessage(e => onMessage(e.data));
         events.socket.send({ type: 'subscribe', topic: ANALYTICS_TOPIC });
       } catch (err) {
         const error = err as Error | AxiosError;
