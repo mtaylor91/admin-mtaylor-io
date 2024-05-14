@@ -35,10 +35,11 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
     const connect = async () => {
       try {
         const url = `/topics/${ANALYTICS_TOPIC}/send-receive`
-        await events.request('PUT', url);
+        await events.request('POST', url);
         if (!events.socket.connected) await events.connect();
         events.socket.onMessage(e => onMessage(e.data));
-        events.socket.send({ type: 'subscribe', topic: ANALYTICS_TOPIC });
+        events.socket.subscribe(ANALYTICS_TOPIC);
+        events.socket.replay(ANALYTICS_TOPIC);
       } catch (err) {
         const error = err as Error | AxiosError;
         if (!axios.isAxiosError(error))
