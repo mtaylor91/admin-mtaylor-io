@@ -5,6 +5,7 @@ import { useEffect, useState } from 'preact/hooks'
 import IAM from 'iam-mtaylor-io-js'
 import Events from 'events-mtaylor-io-js'
 
+import { NotFound } from './error/404'
 import { CreateGroup } from './create/group'
 import { CreatePolicy } from './create/policy'
 import { CreateUser } from './create/user'
@@ -100,6 +101,7 @@ export function App() {
             <SideMenu />
             <main class="content">
               <Router>
+                <NotFound default />
                 <ShowUsers path="/" iam={iam}/>
                 <CreateGroup path="/create/group" iam={iam}/>
                 <CreatePolicy path="/create/policy" iam={iam}/>
