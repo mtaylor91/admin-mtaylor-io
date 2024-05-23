@@ -21,7 +21,8 @@ export function CreateChat({ events }: CreateChatProps) {
   const [name, setName] = useState<string>('')
   const [error, setError] = useState<string | null>(null)
 
-  const createChat = async () => {
+  const createChat = async (event: Event) => {
+    event.preventDefault()
     const id = uuidv4()
     const chatTopicBroadcastUrl = `/topics/${CHATS_TOPIC}/broadcast`
     const chatTopicLogEventsUrl = `/topics/${CHATS_TOPIC}/log-events`

@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { useState } from 'preact/hooks'
-import { v4 as uuidv4 } from 'uuid'
+import { validate as validateUUID, v4 as uuidv4 } from 'uuid'
 
 import Events from 'events-mtaylor-io-js'
 
@@ -19,8 +19,14 @@ export function CreateTopic({ events }: CreateTopicProps) {
 
   const createTopic = async () => {
     try {
+      if (topicId && !validateUUID(topicId)) {
+        setError('Invalid topic ID')
+        return
+      }
+
+      const id = topicId || uuidv4()
       const response = await events.request('POST', '/topics', null, {
-        id: uuidv4(),
+        id,
         broadcast,
         logEvents
       })

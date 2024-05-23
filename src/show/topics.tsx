@@ -43,6 +43,20 @@ export function ShowTopics({ events }: ShowTopicsProps) {
     fetchTopics()
   }, [events])
 
+  const onClickDelete = (id: string) => async (e: Event) => {
+    e.preventDefault()
+    try {
+      await events.request('DELETE', `/topics/${id}`)
+      setTopics(topics.filter(topic => topic.id !== id))
+    } catch (err) {
+      const error = err as Error | AxiosError
+      if (!axios.isAxiosError(error))
+        throw error
+      setError(error.response?.data?.error || error.message)
+      throw error
+    }
+  }
+
   return (
     <div class="list-view">
       <div class="menubar">
@@ -56,6 +70,7 @@ export function ShowTopics({ events }: ShowTopicsProps) {
             <th>Broadcast</th>
             <th>Log Events</th>
             <th>Created At</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -65,6 +80,9 @@ export function ShowTopics({ events }: ShowTopicsProps) {
               <td>{topic.broadcast ? 'Yes' : 'No'}</td>
               <td>{topic.logEvents ? 'Yes' : 'No'}</td>
               <td>{topic.createdAt}</td>
+              <td>
+                <button onClick={onClickDelete(topic.id)}>Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>
