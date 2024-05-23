@@ -10,6 +10,7 @@ import { CreateChat } from './create/chat'
 import { CreateGroup } from './create/group'
 import { CreatePolicy } from './create/policy'
 import { CreateUser } from './create/user'
+import { CreateTopic } from './create/topic'
 import { EditUserName, EditUserEmail } from './edit/user'
 import { Login } from './login'
 import { HeaderMenu, SideMenu } from './menu'
@@ -23,6 +24,7 @@ import { ShowGroup } from './show/group'
 import { ShowSessions } from './show/sessions'
 import { ShowSession } from './show/session'
 import { ShowPageViews } from './show/pageviews'
+import { ShowTopics } from './show/topics'
 import './app.css'
 
 
@@ -110,6 +112,7 @@ export function App() {
                 <CreateGroup path="/create/group" iam={iam}/>
                 <CreatePolicy path="/create/policy" iam={iam}/>
                 <CreateUser path="/create/user" iam={iam}/>
+                <CreateTopic path="/create/topic" events={events} />
                 <EditUserName path="/edit/user/:id/name" iam={iam}/>
                 <EditUserEmail path="/edit/user/:id/email" iam={iam}/>
                 <ShowUsers path="/users" iam={iam}/>
@@ -121,6 +124,7 @@ export function App() {
                 <ShowSessions path="/sessions" iam={iam} events={events} />
                 <ShowSession path="/sessions/:id" iam={iam} events={events} />
                 <ShowPageViews path="/pageviews" events={events} />
+                <ShowTopics path="/topics" iam={iam} events={events} />
               </Router>
             </main>
           </div>
