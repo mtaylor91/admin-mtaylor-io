@@ -34,8 +34,6 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
 
     const connect = async () => {
       try {
-        const url = `/topics/${ANALYTICS_TOPIC}/send-receive`
-        await events.request('POST', url);
         if (!events.socket.connected) await events.connect();
         events.socket.subscribe(ANALYTICS_TOPIC, e => onMessage(e.data));
         events.socket.replay(ANALYTICS_TOPIC);
