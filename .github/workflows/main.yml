@@ -145,6 +145,6 @@ jobs:
       run: |
         set -euxo pipefail
         tag=${{ needs.docker.outputs.tag }}
-        ./bin/update-repo-tag.sh home/namespaced/mtaylor-io mtaylor.io ${tag}
+        ./bin/update-repo-tag.sh home/namespaced/mtaylor-io admin-mtaylor-io ${tag}
         git commit -a -m "Update mtaylor-io to ${tag}"
         git push origin main
