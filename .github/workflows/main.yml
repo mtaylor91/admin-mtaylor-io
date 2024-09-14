@@ -1,0 +1,150 @@
+name: "Build Development Trunk"
+on:
+  push:
+    branches:
+    - main
+jobs:
+  build:
+    name: "Build"
+    runs-on: admin-mtaylor-io-runner-k8s
+    container:
+      image: "docker.io/oven/bun:1"
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Build
+      run: |
+        bun install
+        bun run build
+    - name: Upload dist
+      uses: actions/upload-artifact@v4
+      with:
+        name: "dist"
+        path: "dist"
+        if-no-files-found: "error"
+        retention-days: 0
+        include-hidden-files: false
+  version:
+    name: "Assign Version"
+    runs-on: admin-mtaylor-io-runner-k8s
+    container:
+      image: "images.home.mtaylor.io/deployer:0.0.7"
+    outputs:
+      tag: "${{ steps.version.outputs.tag }}"
+    steps:
+    - name: "Checkout"
+      uses: "actions/checkout@v4"
+    - id: "version"
+      name: "Generate Version Tag"
+      run: |
+        set -eux
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git fetch origin 'refs/tags/*:refs/tags/*'
+        export tag=$(get-release-tag)
+        echo "tag=$tag" >> $GITHUB_OUTPUT
+  tag:
+    name: "Tag Repository"
+    runs-on: admin-mtaylor-io-runner-k8s
+    container:
+      image: "images.home.mtaylor.io/deployer:0.0.7"
+    needs:
+    - "build"
+    - "version"
+    outputs:
+      sha: "${{ steps.tag.outputs.sha }}"
+      tag: "${{ needs.version.outputs.tag }}"
+    steps:
+    - name: "Checkout"
+      uses: "actions/checkout@v4"
+    - id: tag
+      name: "Tag"
+      shell: "bash"
+      run: |
+        set -euxo pipefail
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git config --global user.email "githubactions@mtaylor.io"
+        git config --global user.name "GitHub Actions"
+        pushd deploy
+        tag=${{ needs.version.outputs.tag }}
+        kustomize edit set image images.home.mtaylor.io/admin-mtaylor-io:${tag}
+        popd
+        git commit -a -m "Release ${tag}"
+        git tag -a ${tag} -m "Release ${tag}"
+        git push origin ${tag}
+        sha=$(git rev-parse --short HEAD)
+        echo "sha=$sha" >> $GITHUB_OUTPUT
+  docker:
+    name: "Build Docker Image"
+    runs-on: admin-mtaylor-io-runner-dind
+    needs:
+    - "tag"
+    outputs:
+      sha: "${{ needs.tag.outputs.sha }}"
+      tag: "${{ needs.tag.outputs.tag }}"
+    steps:
+    - name: "Set up Docker Buildx"
+      uses: "docker/setup-buildx-action@v3"
+    - name: "Checkout"
+      uses: "actions/checkout@v4"
+    - name: "Download dist"
+      uses: "actions/download-artifact@v4"
+      with:
+        name: "dist"
+        path: "dist"
+    - id: "meta"
+      name: "Docker Metadata"
+      uses: "docker/metadata-action@v5"
+      with:
+        images: "images.home.mtaylor.io/admin-mtaylor-io"
+        tags: |
+          latest
+          ${{ needs.tag.outputs.tag }}
+          sha-${{ needs.tag.outputs.sha }}
+    - name: "Docker Build"
+      uses: "docker/build-push-action@v6"
+      with:
+        push: true
+        context: "."
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+  release:
+    name: "Release"
+    environment: "production"
+    runs-on: admin-mtaylor-io-runner-k8s
+    container:
+      image: "images.home.mtaylor.io/deployer:0.0.7"
+    needs:
+    - "docker"
+    steps:
+    - name: Checkout admin-mtaylor-io
+      uses: "actions/checkout@v4"
+      with:
+        path: "admin-mtaylor-io"
+        ref: "refs/tags/${{ needs.docker.outputs.tag }}"
+    - name: "Checkout argocd-deployment"
+      uses: "actions/checkout@v4"
+      with:
+        ref: "main"
+        path: "argocd-deployment"
+        repository: "mtaylor91/argocd-deployment"
+        ssh-key: ${{ secrets.ARGOCD_DEPLOYMENT_SSH_PRIVATE_KEY }}
+    - name: "Configure Git"
+      shell: "bash"
+      run: |
+        git config --global user.email "githubactions@mtaylor.io"
+        git config --global user.name "GitHub Actions"
+    - name: "Update Release Branch"
+      shell: "bash"
+      working-directory: "admin-mtaylor-io"
+      run: |
+        set -euxo pipefail
+        git push -f origin HEAD:release
+    - name: "Update argocd-deployment"
+      shell: "bash"
+      working-directory: "argocd-deployment"
+      run: |
+        set -euxo pipefail
+        tag=${{ needs.docker.outputs.tag }}
+        ./bin/update-repo-tag.sh home/namespaced/mtaylor-io mtaylor.io ${tag}
+        git commit -a -m "Update mtaylor-io to ${tag}"
+        git push origin main
