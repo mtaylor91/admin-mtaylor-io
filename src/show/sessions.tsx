@@ -63,7 +63,7 @@ function ShowSession({ iam, events, sessionId }: ShowSessionProps) {
   useEffect(() => {
     const getSession = async () => {
       try {
-        const response = await events.request('GET', `/session/${sessionId}`)
+        const response = await events.request('GET', `/sessions/${sessionId}`)
         const userId = response.data.user
         const session = await iam.sessions.getSession(sessionId, userId)
         setSession(session)
