@@ -3,11 +3,22 @@ import { useState, useEffect } from 'preact/hooks'
 
 import Events from 'events-mtaylor-io-js'
 
+import { Pagination } from '../components/pagination'
+
 
 const ANALYTICS_TOPIC: string = "95e990d4-e445-4649-a28b-bfa3834c1408"
 
 
 interface PageViewEvent {
+  created: string
+  data: PageViewEventData
+  id: string
+  topic: string
+  type: 'publish'
+}
+
+
+interface PageViewEventData {
   event: 'pageview'
   path: string
   referrer: string
@@ -19,24 +30,32 @@ interface PageViewEvent {
 interface ShowPageViewsProps {
   events: Events
   path?: string
+  offset?: number
+  limit?: number
 }
 
 
-export function ShowPageViews({ events }: ShowPageViewsProps) {
-  const [messages, setMessages] = useState<PageViewEvent[]>([]);
+export function ShowPageViews(props: ShowPageViewsProps) {
+  const [messages, setMessages] = useState<PageViewEventData[]>([]);
+  const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  const events = props.events;
+  const offset = Number(props.offset) || 0;
+  const limit = Number(props.limit) || 10;
+
   useEffect(() => {
-
-    const onMessage = (event: PageViewEvent) => {
-      setMessages((messages) => [...messages, event]);
-    }
-
     const connect = async () => {
       try {
-        if (!events.socket.connected) await events.connect();
-        events.socket.subscribe(ANALYTICS_TOPIC, e => onMessage(e.data));
-        events.socket.replay(ANALYTICS_TOPIC);
+        const query = new URLSearchParams();
+        query.append('offset', offset.toString());
+        query.append('limit', limit.toString());
+        const response = await events.request(
+          'GET', `/topics/${ANALYTICS_TOPIC}/events`, query.toString())
+        const items = response.data.items as PageViewEvent[]
+        const messages = items.map(event => event.data)
+        setTotal(response.data.total);
+        setMessages(messages);
       } catch (err) {
         const error = err as Error | AxiosError;
         if (!axios.isAxiosError(error))
@@ -47,7 +66,7 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
     }
 
     connect();
-  }, [events]);
+  }, [events, offset, limit]);
 
   return (
     <div class="list-view">
@@ -74,6 +93,7 @@ export function ShowPageViews({ events }: ShowPageViewsProps) {
           ))}
         </tbody>
       </table>
+      <Pagination offset={offset} limit={limit} total={total} />
     </div>
   );
 }
