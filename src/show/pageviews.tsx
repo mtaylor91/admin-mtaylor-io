@@ -36,6 +36,7 @@ interface ShowPageViewsProps {
 
 
 export function ShowPageViews(props: ShowPageViewsProps) {
+  const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState<PageViewEventData[]>([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +48,7 @@ export function ShowPageViews(props: ShowPageViewsProps) {
   useEffect(() => {
     const connect = async () => {
       try {
+        setLoading(true);
         const query = new URLSearchParams();
         query.append('offset', offset.toString());
         query.append('limit', limit.toString());
@@ -56,6 +58,7 @@ export function ShowPageViews(props: ShowPageViewsProps) {
         const messages = items.map(event => event.data)
         setTotal(response.data.total);
         setMessages(messages);
+        setLoading(false);
       } catch (err) {
         const error = err as Error | AxiosError;
         if (!axios.isAxiosError(error))
@@ -67,6 +70,10 @@ export function ShowPageViews(props: ShowPageViewsProps) {
 
     connect();
   }, [events, offset, limit]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div class="list-view">
