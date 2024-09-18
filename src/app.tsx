@@ -117,7 +117,7 @@ export function App() {
                 <ShowGroup path="/groups/:id" iam={iam} />
                 <ShowPolicies path="/policies" iam={iam} />
                 <ShowPolicy path="/policies/:id" iam={iam} />
-                <ShowSessions path="/sessions" iam={iam} events={events} />
+                <ShowSessions path="/sessions" iam={iam} />
                 <ShowSession path="/sessions/:id" iam={iam} events={events} />
                 <ShowPageViews path="/pageviews" events={events} />
                 <ShowTopics path="/topics" iam={iam} events={events} />

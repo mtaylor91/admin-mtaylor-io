@@ -1,71 +1,43 @@
 import axios, { AxiosError } from 'axios'
 import { useEffect, useState } from 'preact/hooks'
-import { Link } from 'preact-router/match'
+import { Link, route } from 'preact-router'
 
-import Events from 'events-mtaylor-io-js'
-import IAM from 'iam-mtaylor-io-js'
-import type { Session, User } from 'iam-mtaylor-io-js'
+import IAM, { SortSessionsBy, SortOrder } from 'iam-mtaylor-io-js'
+import type { Session } from 'iam-mtaylor-io-js'
 
-
-interface ShowSessionUserProps {
-  iam: IAM
-  userId?: string
-}
-
-
-function ShowSessionUser({ iam, userId }: ShowSessionUserProps) {
-  const [user, setUser] = useState<User | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!userId) {
-      return
-    }
-
-    const getUser = async () => {
-      try {
-        const user = await iam.users.getUser(userId)
-        setUser(user)
-      } catch (err) {
-        const error = err as Error | AxiosError
-        if (!axios.isAxiosError(error))
-          throw error
-        setError(error.response?.data?.error || error.message)
-        throw error
-      }
-    }
-
-    getUser()
-  }, [iam, userId])
-
-  return (
-    <td>
-      {error && <p class="error">{error}</p>}
-      <Link href={`/users/${userId}`}>
-        {user?.name || user?.email || user?.id || 'Unknown'}
-      </Link>
-    </td>
-  )
-}
+import { Pagination } from '../components/pagination'
 
 
 interface ShowSessionsProps {
   iam: IAM,
-  events: Events,
   path?: string
+  offset?: number
+  limit?: number
+  search?: string
+  sort?: string
+  order?: string
 }
 
 
-export function ShowSessions({ iam }: ShowSessionsProps) {
-  const [search, setSearch] = useState<string>('')
+export function ShowSessions({
+  iam, search, sort, order, offset, limit
+}: ShowSessionsProps) {
   const [sessions, setSessions] = useState<Session[]>([])
+  const [total, setTotal] = useState(0)
   const [error, setError] = useState<string | null>(null)
+
+  offset = Number(offset) || 0
+  limit = Number(limit) || 50
+  sort = sort || "user"
+  order = order || "asc"
 
   useEffect(() => {
     const getSessions = async () => {
       try {
-        const response = await iam.sessions.listSessions(search)
+        const response = await iam.sessions.listSessions(
+          search, sort as SortSessionsBy, order as SortOrder, offset, limit)
         setSessions(response.items)
+        setTotal(response.total)
       } catch (err) {
         const error = err as Error | AxiosError
         if (!axios.isAxiosError(error))
@@ -76,11 +48,17 @@ export function ShowSessions({ iam }: ShowSessionsProps) {
     }
 
     getSessions()
-  }, [iam, search, setError, setSessions])
+  }, [offset, limit, search, sort, order])
 
   const onInputSearch = async (event: Event) => {
     const target = event.target as HTMLInputElement
-    setSearch(target.value)
+    const params = new URLSearchParams()
+    params.append('offset', offset.toString())
+    params.append('limit', limit.toString())
+    params.append('sort', sort)
+    params.append('order', order)
+    params.append('search', target.value)
+    route(`/sessions?${params.toString()}`)
   }
 
   return (
@@ -111,12 +89,17 @@ export function ShowSessions({ iam }: ShowSessionsProps) {
                 <td>
                   {session.address}
                 </td>
-                <ShowSessionUser iam={iam} userId={session.user} />
+                <td>
+                  <Link href={`/users/${session.user}`}>
+                    {session.user}
+                  </Link>
+                </td>
               </tr>
             )
           })}
         </tbody>
       </table>
+      <Pagination offset={offset} limit={limit} total={total} />
     </div>
   )
 }
