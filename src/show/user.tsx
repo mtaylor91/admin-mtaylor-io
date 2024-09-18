@@ -300,7 +300,7 @@ interface UserSessionsProps {
 function UserSessions({ iam, user, sessions, refresh }: UserSessionsProps) {
   const onClickDelete = async (event: Event, session: Session) => {
     event.preventDefault()
-    await iam.sessions.deleteSession(session.id, user.id)
+    await iam.userSessions.deleteSession(session.id, user.id)
     refresh()
   }
 

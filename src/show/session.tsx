@@ -25,9 +25,7 @@ export function ShowSession({ iam, events, id }: ShowSessionProps) {
   useEffect(() => {
     const getSession = async () => {
       try {
-        const response = await events.request('GET', `/sessions/${id}`);
-        const userId = response.data.user;
-        const session = await iam.sessions.getSession(id, userId);
+        const session = await iam.sessions.getSession(id);
         setSession(session);
       } catch (err) {
         const error = err as Error | AxiosError;
