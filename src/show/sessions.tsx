@@ -4,7 +4,7 @@ import { Link } from 'preact-router/match'
 
 import Events from 'events-mtaylor-io-js'
 import IAM from 'iam-mtaylor-io-js'
-import type { User } from 'iam-mtaylor-io-js'
+import type { Session, User } from 'iam-mtaylor-io-js'
 
 
 interface ShowSessionUserProps {
@@ -49,52 +49,6 @@ function ShowSessionUser({ iam, userId }: ShowSessionUserProps) {
 }
 
 
-interface ShowSessionProps {
-  iam: IAM
-  events: Events
-  sessionId: string
-}
-
-
-function ShowSession({ iam, events, sessionId }: ShowSessionProps) {
-  const [error, setError] = useState<string | null>(null)
-  const [session, setSession] = useState<any | null>(null)
-
-  useEffect(() => {
-    const getSession = async () => {
-      try {
-        const session = await iam.sessions.getSession(sessionId)
-        setSession(session)
-      } catch (err) {
-        const error = err as Error | AxiosError
-        if (!axios.isAxiosError(error))
-          throw error
-        setError(error.response?.data?.error || error.message)
-        throw error
-      }
-    }
-
-    getSession()
-  }, [events, sessionId])
-
-  return (
-    <tr>
-      <td>
-        {error && <p class="error">{error}</p> || (
-        <Link href={`/sessions/${sessionId}`}>
-          {sessionId}
-        </Link>
-        )}
-      </td>
-      <td>
-        {session?.address}
-      </td>
-      <ShowSessionUser iam={iam} userId={session?.user} />
-    </tr>
-  )
-}
-
-
 interface ShowSessionsProps {
   iam: IAM,
   events: Events,
@@ -102,16 +56,16 @@ interface ShowSessionsProps {
 }
 
 
-export function ShowSessions({ iam, events }: ShowSessionsProps) {
+export function ShowSessions({ iam }: ShowSessionsProps) {
   const [search, setSearch] = useState<string>('')
-  const [sessions, setSessions] = useState<string[]>([])
+  const [sessions, setSessions] = useState<Session[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const getSessions = async () => {
       try {
-        const response = await events.request('GET', '/sessions')
-        setSessions(response.data.sessions)
+        const response = await iam.sessions.listSessions(search)
+        setSessions(response.items)
       } catch (err) {
         const error = err as Error | AxiosError
         if (!axios.isAxiosError(error))
@@ -122,7 +76,7 @@ export function ShowSessions({ iam, events }: ShowSessionsProps) {
     }
 
     getSessions()
-  }, [events, setError, setSessions])
+  }, [iam, search, setError, setSessions])
 
   const onInputSearch = async (event: Event) => {
     const target = event.target as HTMLInputElement
@@ -144,9 +98,21 @@ export function ShowSessions({ iam, events }: ShowSessionsProps) {
           </tr>
         </thead>
         <tbody>
-          {sessions.filter(s => s.includes(search)).map(session => {
+          {sessions.map(session => {
             return (
-              <ShowSession key={session} iam={iam} events={events} sessionId={session} />
+              <tr key={session.id}>
+                <td>
+                  {error && <p class="error">{error}</p> || (
+                  <Link href={`/sessions/${session.id}`}>
+                    {session.id}
+                  </Link>
+                  )}
+                </td>
+                <td>
+                  {session.address}
+                </td>
+                <ShowSessionUser iam={iam} userId={session.user} />
+              </tr>
             )
           })}
         </tbody>
