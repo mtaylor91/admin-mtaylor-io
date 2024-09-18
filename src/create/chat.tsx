@@ -1,7 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { useState } from 'preact/hooks'
 import { Link } from 'preact-router'
-import { v4 as uuidv4 } from 'uuid'
 
 import Events from 'events-mtaylor-io-js'
 import IAM from 'iam-mtaylor-io-js'
@@ -23,13 +22,9 @@ export function CreateChat({ events }: CreateChatProps) {
 
   const createChat = async (event: Event) => {
     event.preventDefault()
-    const id = uuidv4()
-    const chatTopicBroadcastUrl = `/topics/${CHATS_TOPIC}/broadcast`
-    const chatTopicLogEventsUrl = `/topics/${CHATS_TOPIC}/log-events`
     try {
-      await events.request('POST', chatTopicBroadcastUrl)
-      await events.request('POST', chatTopicLogEventsUrl)
-      events.socket.publish(CHATS_TOPIC, { id, name })
+      if (!events.socket.connected) await events.connect()
+      events.socket.publish(CHATS_TOPIC, { name })
     } catch (err) {
       const error = err as Error | AxiosError
       if (!axios.isAxiosError(error))

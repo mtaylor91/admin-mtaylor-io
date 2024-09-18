@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { useState, useEffect } from 'preact/hooks'
+import { Link } from 'preact-router/match'
 
 import Events from 'events-mtaylor-io-js'
 
@@ -46,7 +47,7 @@ export function ShowPageViews(props: ShowPageViewsProps) {
   const limit = Number(props.limit) || 10;
 
   useEffect(() => {
-    const connect = async () => {
+    const loadPageViewEvents = async () => {
       try {
         setLoading(true);
         const query = new URLSearchParams();
@@ -67,7 +68,7 @@ export function ShowPageViews(props: ShowPageViewsProps) {
       }
     }
 
-    connect();
+    loadPageViewEvents();
   }, [events, offset, limit]);
 
   if (loading) {
@@ -93,7 +94,11 @@ export function ShowPageViews(props: ShowPageViewsProps) {
           {messages.map((message, index) => (
             <tr key={index}>
               <td>{message.created}</td>
-              <td>{message.data.session}</td>
+              <td>
+                <Link href={`/sessions/${message.data.session}`}>
+                  {message.data.session}
+                </Link>
+              </td>
               <td>{message.data.address}</td>
               <td>{message.data.path}</td>
               <td>{message.data.referrer}</td>
