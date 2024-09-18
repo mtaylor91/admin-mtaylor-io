@@ -37,7 +37,7 @@ interface ShowPageViewsProps {
 
 export function ShowPageViews(props: ShowPageViewsProps) {
   const [loading, setLoading] = useState(true);
-  const [messages, setMessages] = useState<PageViewEventData[]>([]);
+  const [messages, setMessages] = useState<PageViewEvent[]>([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,8 +54,7 @@ export function ShowPageViews(props: ShowPageViewsProps) {
         query.append('limit', limit.toString());
         const response = await events.request(
           'GET', `/topics/${ANALYTICS_TOPIC}/events`, query.toString())
-        const items = response.data.items as PageViewEvent[]
-        const messages = items.map(event => event.data)
+        const messages = response.data.items as PageViewEvent[]
         setTotal(response.data.total);
         setMessages(messages);
         setLoading(false);
@@ -83,6 +82,7 @@ export function ShowPageViews(props: ShowPageViewsProps) {
       <table>
         <thead>
           <tr>
+            <th>Time</th>
             <th>Session</th>
             <th>Address</th>
             <th>Path</th>
@@ -92,10 +92,11 @@ export function ShowPageViews(props: ShowPageViewsProps) {
         <tbody>
           {messages.map((message, index) => (
             <tr key={index}>
-              <td>{message.session}</td>
-              <td>{message.address}</td>
-              <td>{message.path}</td>
-              <td>{message.referrer}</td>
+              <td>{message.created}</td>
+              <td>{message.data.session}</td>
+              <td>{message.data.address}</td>
+              <td>{message.data.path}</td>
+              <td>{message.data.referrer}</td>
             </tr>
           ))}
         </tbody>
