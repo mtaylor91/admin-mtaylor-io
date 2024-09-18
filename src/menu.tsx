@@ -27,7 +27,6 @@ interface SideMenuProps {
 export function SideMenu({}: SideMenuProps) {
   return (
     <nav class="side-menu">
-      <Link activeClassName="active" href="/chats">Chat Rooms</Link>
       <Link activeClassName="active" href="/users">Users</Link>
       <Link activeClassName="active" href="/groups">Groups</Link>
       <Link activeClassName="active" href="/policies">Policies</Link>

@@ -6,7 +6,6 @@ import IAM from 'iam-mtaylor-io-js'
 import Events from 'events-mtaylor-io-js'
 
 import { NotFound } from './error/404'
-import { CreateChat } from './create/chat'
 import { CreateGroup } from './create/group'
 import { CreatePolicy } from './create/policy'
 import { CreateUser } from './create/user'
@@ -14,7 +13,6 @@ import { CreateTopic } from './create/topic'
 import { EditUserName, EditUserEmail } from './edit/user'
 import { Login } from './login'
 import { HeaderMenu, SideMenu } from './menu'
-import { ShowChats } from './show/chats'
 import { ShowUser } from './show/user'
 import { ShowGroups } from './show/groups'
 import { ShowPolicy } from './show/policy'
@@ -107,8 +105,6 @@ export function App() {
               <Router>
                 <NotFound default />
                 <ShowUsers path="/" iam={iam}/>
-                <ShowChats path="/chats" iam={iam} events={events} />
-                <CreateChat path="/create/chat" iam={iam} events={events} />
                 <CreateGroup path="/create/group" iam={iam}/>
                 <CreatePolicy path="/create/policy" iam={iam}/>
                 <CreateUser path="/create/user" iam={iam}/>
