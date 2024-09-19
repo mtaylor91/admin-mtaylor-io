@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: "Build"
-    runs-on: admin-mtaylor-io-runner-k8s
+    runs-on: mtaylorio-runner-k8s
     container:
       image: "docker.io/oven/bun:1"
     steps:
@@ -26,7 +26,7 @@ jobs:
         include-hidden-files: false
   version:
     name: "Assign Version"
-    runs-on: admin-mtaylor-io-runner-k8s
+    runs-on: mtaylorio-runner-k8s
     container:
       image: "images.home.mtaylor.io/deployer:0.0.9"
     outputs:
@@ -44,7 +44,7 @@ jobs:
         echo "tag=$tag" >> $GITHUB_OUTPUT
   tag:
     name: "Tag Repository"
-    runs-on: admin-mtaylor-io-runner-k8s
+    runs-on: mtaylorio-runner-k8s
     container:
       image: "images.home.mtaylor.io/deployer:0.0.9"
     needs:
@@ -75,7 +75,7 @@ jobs:
         echo "sha=$sha" >> $GITHUB_OUTPUT
   docker:
     name: "Build Docker Image"
-    runs-on: admin-mtaylor-io-runner-dind
+    runs-on: mtaylorio-runner-dind
     needs:
     - "tag"
     outputs:
@@ -110,7 +110,7 @@ jobs:
   release:
     name: "Release"
     environment: "production"
-    runs-on: admin-mtaylor-io-runner-k8s
+    runs-on: mtaylorio-runner-k8s
     container:
       image: "images.home.mtaylor.io/deployer:0.0.9"
     needs:
@@ -144,8 +144,10 @@ jobs:
       working-directory: "argocd-deployment"
       run: |
         set -euxo pipefail
+        path=home/namespaced/mtaylor-io
         tag=${{ needs.docker.outputs.tag }}
-        ./bin/update-repo-tag.sh home/namespaced/mtaylor-io admin-mtaylor-io ${tag}
+        repo=https://github.com/mtaylorio/admin.mtaylor.io
+        ./bin/update-repo-tag.sh ${path} ${repo} ${tag}
         git commit -a -m "Update admin.mtaylor.io to ${tag}"
         git push origin main
     - name: "Sync argocd"
