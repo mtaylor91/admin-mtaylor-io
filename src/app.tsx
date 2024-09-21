@@ -23,6 +23,7 @@ import { ShowSessions } from './show/sessions'
 import { ShowSession } from './show/session'
 import { ShowPageViews } from './show/pageviews'
 import { ShowTopics } from './show/topics'
+import { ShowTopic } from './show/topic'
 import './app.css'
 
 
@@ -121,6 +122,7 @@ export function App() {
                 <ShowSession path="/sessions/:id" iam={iam} events={events} />
                 <ShowPageViews path="/pageviews" events={events} />
                 <ShowTopics path="/topics" iam={iam} events={events} />
+                <ShowTopic path="/topics/:id" iam={iam} events={events} />
               </Router>
             </main>
           </div>

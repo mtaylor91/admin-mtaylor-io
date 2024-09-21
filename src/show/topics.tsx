@@ -76,7 +76,9 @@ export function ShowTopics({ events }: ShowTopicsProps) {
         <tbody>
           {topics.map(topic => (
             <tr>
-              <td>{topic.id}</td>
+              <td>
+                <Link href={`/topics/${topic.id}`}>{topic.id}</Link>
+              </td>
               <td>{topic.broadcast ? 'Yes' : 'No'}</td>
               <td>{topic.logEvents ? 'Yes' : 'No'}</td>
               <td>{topic.createdAt}</td>
